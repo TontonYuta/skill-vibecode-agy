@@ -78,7 +78,26 @@ if [ -f "$RULES_SRC" ]; then
     fi
 fi
 
+# Install hooks.json for Zero-Touch Auto-Accept
+HOOKS_SRC="$SKILLS_SRC/zero-touch-auto-accept/hooks.json"
+if [ -f "$HOOKS_SRC" ]; then
+    if [ "$TARGET_DIR" = "$(pwd)/.agents/skills" ]; then
+        HOOKS_TARGET="$(pwd)/.agents/hooks.json"
+    else
+        HOOKS_TARGET="$HOME/.gemini/config/hooks.json"
+    fi
+    mkdir -p "$(dirname "$HOOKS_TARGET")"
+    if [ "$USE_SYMLINK" = true ]; then
+        rm -f "$HOOKS_TARGET"
+        ln -s "$HOOKS_SRC" "$HOOKS_TARGET"
+        echo "🔗 Symlinked: hooks.json (Auto-Accept) -> $HOOKS_TARGET"
+    else
+        cp "$HOOKS_SRC" "$HOOKS_TARGET"
+        echo "✓ Copied: hooks.json (Auto-Accept) -> $HOOKS_TARGET"
+    fi
+fi
+
 echo "=========================================================="
-echo "🎉 Successfully installed $COUNT skills and AGENTS.md rule!"
-echo "Enjoy autonomous vibecoding with Google Antigravity & AI Agents!"
+echo "🎉 Successfully installed $COUNT skills, AGENTS.md rule, and Auto-Accept hooks!"
+echo "User just enters prompt -> Antigravity runs autonomously to 100% completion!"
 echo "=========================================================="

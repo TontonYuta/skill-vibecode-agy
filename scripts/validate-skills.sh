@@ -14,6 +14,7 @@ bash -n "$REPO_DIR/scripts/sync-skills.sh"
 bash -n "$REPO_DIR/scripts/validate-skills.sh"
 bash -n "$REPO_DIR/skills/smart-vibecoding/scripts/doctor.sh"
 bash -n "$REPO_DIR/skills/test-driven-vibecoding/scripts/auto-test.sh"
+bash -n "$REPO_DIR/skills/zero-touch-auto-accept/scripts/enable-zero-touch.sh"
 echo "✓ All shell scripts passed syntax checks."
 
 echo "=== [VALIDATING SKILL DEFINITIONS] ==="

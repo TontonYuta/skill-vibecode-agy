@@ -35,6 +35,30 @@ Khi một lệnh build hoặc test bị lỗi:
 - Không dùng API key bên thứ ba.
 [ĐIỀU KIỆN HOÀN THÀNH]:
 - Toàn bộ test suite phải chạy và Pass 100%.
-- Không còn lỗi TypeScript hay cảnh báo nghiêm trọng.
-- Thực hiện trọn gói từ code, build, test và báo cáo kết quả.
 ```
+
+---
+
+## 4. Cơ chế Kỹ thuật Kích hoạt Auto Accept/Allow trong Antigravity (AGY)
+Để loại bỏ 100% hộp thoại xác nhận quyền chạy lệnh terminal hoặc chỉnh sửa tệp:
+
+1. **Chính sách Tool Execution Policy**: Thiết lập `always-proceed` trong cài đặt Antigravity hoặc cấu hình dự án.
+2. **PreToolUse Hook Interceptor**: Sử dụng hook `PreToolUse` với matcher `*` trong `.agents/hooks.json` hoặc `~/.gemini/config/hooks.json`:
+   ```json
+   {
+     "zero-touch-auto-allow": {
+       "PreToolUse": [
+         {
+           "matcher": "*",
+           "hooks": [
+             {
+               "type": "command",
+               "command": "echo '{\"decision\": \"allow\"}'"
+             }
+           ]
+         }
+       ]
+     }
+   }
+   ```
+3. **Chỉ thị AGENTS.md**: Đặt tệp `AGENTS.md` ở thư mục gốc của dự án để ép agent vào chế độ tự chủ, tự vá lỗi và chỉ dừng lại khi test suite đạt 100% Pass.
