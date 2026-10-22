@@ -97,6 +97,8 @@ Explore technical deep dives and real-world case studies in [`playbooks/`](playb
 5. 🔬 [`05-case-study-english-no-api.md`](playbooks/05-case-study-english-no-api.md): **Zero-API English Learning App Case Study** (Edge TTS + Web Speech + Leitner 5-box algorithm).
 6. 🎨 [`06-anti-ai-slop-ui-engineering.md`](playbooks/06-anti-ai-slop-ui-engineering.md): **Eradicating AI Slop**: Enforcing `DESIGN.md`, `UX.md`, and automated Playwright audits.
 7. 🧠 [`07-socratic-prompting-and-grill-me.md`](playbooks/07-socratic-prompting-and-grill-me.md): **Socratic Interviewing (/grill-me)**: Forcing the AI to question requirements and edge cases before coding.
+8. 🎯 [`08-business-analysis-and-mvp-scoping.md`](playbooks/08-business-analysis-and-mvp-scoping.md): **Business Analysis & Feature Scoping**: Jobs-to-be-Done (JTBD), MoSCoW framework, the Cut-50% Rule, and locking down 1 Killer Feature to prevent feature bloat.
+9. 🧭 [`09-mindful-vibecoding-and-tech-stack-mastery.md`](playbooks/09-mindful-vibecoding-and-tech-stack-mastery.md): **Mindful Vibecoding & Tech Stack Mastery**: Eliminating tech blindness, mandatory `TECH_STACK.md` protocol, the 2-Strike Git Reset rule, and Root-Cause Post-Mortems.
 
 ---
 

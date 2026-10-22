@@ -35,3 +35,9 @@
   - **QA Tester**: Viết test cases, chạy test loop-until-green độc lập.
 - **Lean Handoff**: Giao tiếp giữa các agents bằng con trỏ tệp (`file:///path#Lxx`), không truyền paste cả nội dung file vào prompt.
 - **Reactive Wakeup**: Sau khi gọi `invoke_subagent`, dừng gọi tool để hệ thống tự động wake-up khi subagent hoàn thành, tuyệt đối không polling vô nghĩa.
+
+## 5. Scope Hardening, Schema-First & Mindful Engineering (Nghiệp Vụ & Làm Chủ Kiến Trúc)
+- **Cut 50% Rule & MoSCoW Scoping**: Khi nhận yêu cầu mới, chủ động tư vấn cắt bỏ 50% tính năng râu ria, chỉ tập trung vào 1–2 tính năng cốt lõi (Killer Feature). Tuyệt đối không sinh mã khi chưa thống nhất phạm vi trong `spec.md`.
+- **Mandatory `TECH_STACK.md`**: Mọi dự án mới phải có tệp `TECH_STACK.md` giải thích danh sách thư viện sử dụng, lý do lựa chọn và bản đồ luồng dữ liệu (Data Flow).
+- **Schema-First & Explicit State Machine**: Khóa cứng mô hình dữ liệu bằng TypeScript interfaces / Pydantic models. Mọi component tương tác phải định nghĩa đủ 4 trạng thái: `Idle` -> `Loading` -> `Success` -> `Error/Empty`.
+- **2-Strike Git Reset Protocol**: Nếu sửa một lỗi quá 2 lần trong một phiên chat mà không thành công, lập tức khôi phục trạng thái bằng `git reset --hard HEAD` và giải thích nguyên nhân gốc rễ (Root Cause Post-Mortem) cho người dùng trước khi thử chiến lược mới.

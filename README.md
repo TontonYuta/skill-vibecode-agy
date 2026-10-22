@@ -112,6 +112,8 @@ Tất cả các case study và phân tích kỹ thuật chuyên sâu được l�
    - Post-Mortem xử lý dứt điểm lỗi minified runtime `i is not iterable` và cấu hình Vite 6 `allowedHosts: true`.
 6. 🎨 [`06-anti-ai-slop-ui-engineering.md`](playbooks/06-anti-ai-slop-ui-engineering.md): **Tiêu diệt AI Slop**: Cách dùng `DESIGN.md`, `UX.md` và Playwright headless để quét sạch gradient tím, Cardocalypse và text mờ.
 7. 🧠 [`07-socratic-prompting-and-grill-me.md`](playbooks/07-socratic-prompting-and-grill-me.md): **Kỹ thuật phỏng vấn ngược (/grill-me)**: Ép AI chất vấn ngược người dùng về edge cases và data consistency trước khi bắt tay viết code.
+8. 🎯 [`08-business-analysis-and-mvp-scoping.md`](playbooks/08-business-analysis-and-mvp-scoping.md): **Phân tích nghiệp vụ & Chống nhồi nhét tính năng**: Khung Jobs-to-be-Done (JTBD), Khung MoSCoW, Quy tắc cắt bỏ 50% tính năng, và chiến lược khóa chặt 1 Killer Feature cho bản MVP để chống vỡ trận.
+9. 🧭 [`09-mindful-vibecoding-and-tech-stack-mastery.md`](playbooks/09-mindful-vibecoding-and-tech-stack-mastery.md): **Mindful Vibecoding & Làm chủ kiến trúc**: Xóa bỏ hội chứng "mù công nghệ", giao thức `TECH_STACK.md` bắt buộc, quy tắc 2-Strike Git Reset chống vòng xoáy sửa lỗi mù, và kỹ thuật Root-Cause Post-Mortem.
 
 ---
 

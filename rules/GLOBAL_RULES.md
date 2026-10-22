@@ -37,3 +37,11 @@ Bộ quy chuẩn chung áp dụng cho tất cả AI Coding Agents (Google Antigr
   - **Code Implementer**: Viết code sạch, chặt chẽ, type-safe.
   - **Code Auditor**: Rà soát bảo mật, rò rỉ tài nguyên, edge cases.
   - **QA Tester**: Viết test cases và chạy kiểm thử độc lập.
+
+---
+
+## 5. Scope Governance, Schema-First & Mindful Architecture
+- **Quy tắc cắt bỏ 50% tính năng (Scope Hardening)**: Không bao giờ code dồn dập nhiều tính năng phụ. Tập trung 100% vào 1 tính năng sát thủ (Killer Feature) cho bản MVP.
+- **Hồ sơ công nghệ bắt buộc (`TECH_STACK.md`)**: Giải thích minh bạch danh sách thư viện, lý do lựa chọn và bản đồ luồng dữ liệu (Data Flow).
+- **Máy trạng thái tường minh (State Machine 4 bước)**: Bắt buộc định nghĩa đủ: `Idle` -> `Loading` -> `Success` -> `Error/Empty`. Khóa cứng types bằng TypeScript / Pydantic.
+- **2-Strike Git Reset Protocol**: Nếu AI sửa một lỗi quá 2 lần trong cùng một phiên chat, lập tức khôi phục trạng thái bằng `git reset --hard HEAD` để chặn đứng bẫy viết lại toàn bộ mã (Reimplementation Trap).
