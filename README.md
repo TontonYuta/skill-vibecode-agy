@@ -1,8 +1,10 @@
 # ⚡ Skill Vibecode AGY (Google Antigravity & AI Agents)
 
+**[🇻🇳 Tiếng Việt]** | **[🇺🇸 English](README_EN.md)**
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Platform: Antigravity](https://img.shields.io/badge/Platform-Google%20Antigravity-4285F4.svg)](https://deepmind.google)
-[![Skills: 8 Core](https://img.shields.io/badge/Skills-8%20Essential%20Core-success.svg)](#-danh-mục-8-bộ-skill-cốt-lõi)
+[![Skills: 9 Core](https://img.shields.io/badge/Skills-9%20Essential%20Core-success.svg)](#-danh-mục-9-bộ-skill-cốt-lõi)
 [![Workflow: Zero--Touch](https://img.shields.io/badge/Workflow-Zero--Touch%20Auto--Accept-blueviolet.svg)](#-tính-năng-đinh-zero-touch-auto-acceptallow-100)
 [![Verification: Loop--Until--Green](https://img.shields.io/badge/Verification-Loop--Until--Green-brightgreen.svg)](#-playbooks--kinh-nghiệm-thực-chiến)
 
@@ -36,7 +38,7 @@ Khi lập trình cùng AI Coding Agents thế hệ mới (Google Antigravity, Cl
 
 ---
 
-## 🧭 Danh Mục 8 Bộ Skill Cốt Lõi
+## 🧭 Danh Mục 9 Bộ Skill Cốt Lõi
 
 Toàn bộ các kỹ năng đã được tinh gọn, loại bỏ các kỹ năng ngách, chỉ giữ lại những công cụ đắt giá nhất cho quy trình vibecoding:
 
@@ -50,13 +52,18 @@ Toàn bộ các kỹ năng đã được tinh gọn, loại bỏ các kỹ năng
 | 6 | [`multi-agent-orchestrator-pro`](skills/multi-agent-orchestrator-pro/SKILL.md) | Phân rã bài toán lớn cho Swarm Agents: Spec Architect, Fast Researcher, Implementer, Auditor, QA. | `SKILL.md`, `agent-prompts.md` |
 | 7 | [`git-craft`](skills/git-craft/SKILL.md) | Quản lý phiên bản sạch: atomic commits, conventional commit và các điểm mốc rollback an toàn. | `SKILL.md` |
 | 8 | [`modern-ui-craft`](skills/modern-ui-craft/SKILL.md) | Thiết kế giao diện hiện đại phong cách Apple/Vercel: Dark mode, Tailwind CSS, micro-interactions. | `SKILL.md` |
+| 9 | [`anti-ai-slop-ux`](UX/UI/SKILL.md) | **(Mới)** Quy chuẩn diệt trừ AI Slop, chống gradient tím, dẹp Cardocalypse, chuẩn hóa `DESIGN.md` & `UX.md` máy đọc. | `UX/UI/*`, `scripts/audit-ui-slop.mjs` |
 
 ---
 
 ## 🚀 Cài Đặt 1-Click Cho Toàn Bộ Hệ Thống
 
-Chạy lệnh cài đặt duy nhất để đưa toàn bộ 8 skills, quy chuẩn `AGENTS.md` và hook Auto-Accept vào Antigravity:
+### Cách 1: Cài đặt từ xa 1 dòng lệnh (Khuyên dùng)
+```bash
+curl -fsSL https://raw.githubusercontent.com/TontonYuta/skill-vibecode-agy/main/install.sh | bash
+```
 
+### Cách 2: Cài đặt thủ công từ Local Repository
 ```bash
 git clone https://github.com/TontonYuta/skill-vibecode-agy.git
 cd skill-vibecode-agy
@@ -69,6 +76,23 @@ cd skill-vibecode-agy
 
 # Hoặc cài đặt cho dự án hiện tại (.agents/):
 ./scripts/install-skills.sh --local
+```
+
+---
+
+## 🔄 Chuyển Đổi Đa Nền Tảng (Cross-Harness Adapter)
+
+Không chỉ hỗ trợ Google Antigravity, bạn có thể xuất toàn bộ quy chuẩn và kỹ năng sang **Cursor**, **Claude Code**, và **OpenCode / Roo Code / Cline** chỉ với 1 câu lệnh:
+
+```bash
+# Xuất cho toàn bộ các nền tảng (Cursor, Claude Code, .agents):
+./scripts/export-harness.sh --all
+
+# Hoặc chỉ xuất riêng cho Cursor (.cursor/rules/ & .cursorrules):
+./scripts/export-harness.sh --cursor
+
+# Hoặc chỉ xuất riêng cho Claude Code (CLAUDE.md):
+./scripts/export-harness.sh --claude
 ```
 
 ---
@@ -86,6 +110,8 @@ Tất cả các case study và phân tích kỹ thuật chuyên sâu được l�
    - Thiết kế thuật toán Leitner Spaced Repetition 5 hộp nhớ.
    - Tính năng **Mobile Remote QR**: Kết nối LAN Wi-Fi và đường hầm **Cloudflare Quick Tunnel** an toàn cho 4G/5G.
    - Post-Mortem xử lý dứt điểm lỗi minified runtime `i is not iterable` và cấu hình Vite 6 `allowedHosts: true`.
+6. 🎨 [`06-anti-ai-slop-ui-engineering.md`](playbooks/06-anti-ai-slop-ui-engineering.md): **Tiêu diệt AI Slop**: Cách dùng `DESIGN.md`, `UX.md` và Playwright headless để quét sạch gradient tím, Cardocalypse và text mờ.
+7. 🧠 [`07-socratic-prompting-and-grill-me.md`](playbooks/07-socratic-prompting-and-grill-me.md): **Kỹ thuật phỏng vấn ngược (/grill-me)**: Ép AI chất vấn ngược người dùng về edge cases và data consistency trước khi bắt tay viết code.
 
 ---
 
