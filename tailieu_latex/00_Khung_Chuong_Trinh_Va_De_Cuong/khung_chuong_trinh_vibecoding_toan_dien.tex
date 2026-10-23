@@ -1,0 +1,188 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{mathptmx}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{ragged2e}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+
+% Cấu hình cột bảng chống giãn khoảng cách trắng
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
+\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+
+\title{\textbf{Đặc Tả Khung Chương Trình Giáo Trình Kỹ Nghệ Vibecoding Chuyên Sâu}\\[0.3em]
+\large\textit{Kiến Trúc Đào Tạo Toàn Diện: Nghiệp Vụ, Giải Phẫu Tech Stack, An Ninh Mã Nguồn Và Thiết Kế Hệ Thống}}
+\author{\textbf{Trung Tâm Nghiên Cứu \& Thực Hành Vibecoding Antigravity}}
+\date{Tháng 10 Năm 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Tài liệu này xác lập khung chương trình tổng thể và đề cương chi tiết cho bộ giáo trình hoàn chỉnh về phương pháp Vibecoding (\textit{Agentic Software Engineering}). Khác với các tài liệu hướng dẫn bề mặt vốn chỉ dừng lại ở các mẹo viết prompt ngẫu hứng, giáo trình này được xây dựng với mục tiêu đào tạo chuyên sâu: chuyển hóa người phát triển từ vai trò thử nghiệm thụ động sang vị thế của một Tổng Kiến Trúc Sư kiêm Giám Đốc Sản Phẩm. Giáo trình mổ xẻ tường minh từng công nghệ (làm được gì, không làm được gì, giới hạn tải và điểm nghẽn kỹ thuật), giải quyết dứt điểm các lỗ hổng bảo mật phổ biến trong mã nguồn do AI tạo ra (dựa trên khảo sát thực nghiệm 2026), và chuẩn hóa quy trình phân tích nghiệp vụ, logic lược đồ, cùng thẩm mỹ giao diện phi nhân tạo (\textit{Anti-AI-Slop}).
+\end{abstract}
+
+\vspace{1em}
+\rule{\textwidth}{0.4pt}
+
+\section{Mục tiêu đào tạo và chuẩn đầu ra của giáo trình}
+
+Bộ giáo trình được thiết kế nhằm giúp người học đạt được 4 chuẩn năng lực cốt lõi:
+\begin{enumerate}[label={\arabic*.}]
+    \item \textbf{Năng lực làm chủ nghiệp vụ (Business Mastery)}: Biết cách phẫu thuật một bài toán thực tế bằng khung Jobs-to-be-Done (JTBD), sàng lọc tính năng bằng MoSCoW, và kiên quyết cắt bỏ 50\% tính năng râu ria để xây dựng bản MVP sắc bén, chống vỡ trận.
+    \item \textbf{Năng lực kiến trúc và công nghệ (Architectural Discernment)}: Hiểu sâu sắc bản chất của từng công nghệ trong Tech Stack: biết rõ Playwright làm được gì và khi nào bị quá tải; phân biệt rõ ưu--nhược điểm của REST API, Server Actions và tRPC; hiểu sâu về cơ chế kiểm soát truy cập mức hàng (Row Level Security - RLS) trong Supabase.
+    \item \textbf{Năng lực phòng thủ an ninh mã nguồn (Security Hardening)}: Nhận diện và triệt tiêu 65\% các lỗ hổng bảo mật phổ biến (CWE Top 25) do AI sinh ra, bao gồm SQL Injection, IDOR, rò rỉ biến môi trường và cấu hình CORS lỏng lẻo.
+    \item \textbf{Năng lực thẩm mỹ giao diện cao cấp (Artisan UI/UX)}: Triệt tiêu hoàn toàn chất ``nhựa'' sáo rỗng của AI (AI Slop), làm chủ tỷ lệ màu 60--30--10, nhịp điệu khoảng trắng 8px và cấu trúc component phẳng chuẩn quốc tế.
+\end{enumerate}
+
+\section{Cấu trúc tổng thể bảy chương chuyên sâu}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Cấu trúc phân bổ 7 chương của bộ giáo trình Vibecoding chuyên sâu}
+\vspace{0.5em}
+\begin{tabularx}{\textwidth}{L{2.0cm} L{4.5cm} Y}
+\toprule
+\textbf{Chương} & \textbf{Tên chương} & \textbf{Trọng tâm chuyên sâu và kỹ thuật cốt lõi} \\
+\midrule
+Chương 1 & Bản chất kỹ nghệ Vibecoding \& Mô hình nhận thức & Nợ nhận thức (\textit{Cognitive Debt}), kinh tế học Token, cơ chế suy thoái chú ý của cửa sổ nhớ, bẫy viết lại toàn bộ mã (\textit{Reimplementation Trap}). \\
+Chương 2 & Phân tích nghiệp vụ, Định hình MVP \& Khung JTBD & Khung Jobs-to-be-Done, quy tắc cắt giảm 50\% tính năng, nghệ thuật viết đặc tả kỹ thuật máy đọc (\textit{spec.md}), kỹ thuật phỏng vấn ngược (/grill-me). \\
+Chương 3 & Giải phẫu hệ sinh thái Tech Stack: Khả năng \& Ranh giới & Giải phẫu chuyên sâu Playwright, API (REST vs. Server Actions vs. FastAPI), Database (Supabase vs. SQLite), Frontend (Next.js 15, TypeScript, shadcn/ui). \\
+Chương 4 & An ninh mã nguồn \& Phòng thủ lỗ hổng CWE/OWASP & Thực nghiệm Last Secure Code Benchmark (arXiv:2610.14766), phòng thủ SQLi, IDOR, rò rỉ khóa bí mật, kiểm toán bảo mật tự động bằng Playwright. \\
+Chương 5 & Thiết kế kiến trúc logic \& Khóa cứng bằng Schema & Schema-First, máy trạng thái tường minh 4 bước (\textit{Idle $\to$ Loading $\to$ Success $\to$ Error}), mô-đun hóa dưới 200 dòng, cơ chế Circuit Breaker. \\
+Chương 6 & Nguyên lý thiết kế UX/UI chuyên nghiệp: Diệt trừ AI Slop & Nguồn gốc giao diện nhựa, quy tắc màu 60-30-10, hệ thống lưới khoảng trắng 8px, phân cấp kiểu chữ (Inter/Geist), audit giao diện bằng script tự động. \\
+Chương 7 & Mindful Vibecoding \& Hệ điều hành tự chủ & Tệp `TECH\_STACK.md` bắt buộc, quy tắc 2-Strike Git Reset, kỹ thuật Root-Cause Post-Mortem, tự chủ hóa Zero-Touch với PreToolUse Hooks. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Đề cương chi tiết từng chương}
+
+\subsection{Chương 1: Bản chất kỹ nghệ vibecoding và mô hình nhận thức}
+\begin{itemize}[leftmargin=1.5em]
+    \item Sự tiến hóa từ tự động hoàn thành mã (\textit{Copilot}) sang tác tử tự hành (\textit{Agentic Software Engineering}).
+    \item Phẫu thuật nghịch lý ``Vibe coding until it breaks, then vibe crying''.
+    \item Khái niệm Nợ nhận thức (\textit{Cognitive Debt}) và sự xói mòn khả năng kiểm soát mã nguồn theo công trình \textit{It Is Not My Code Anymore} (arXiv:2609.09022).
+    \item Kinh tế học Token và cấu trúc bộ nhớ của LLM: Kích thước cửa sổ ngữ cảnh, hiện tượng suy thoái chú ý (\textit{Attention Degradation}) khi vượt ngưỡng 30.000 tokens.
+    \item Bẫy viết lại toàn bộ mã (\textit{Reimplementation Trap} - arXiv:2609.29410): Tại sao AI có xu hướng xóa cả hàm để viết lại thay vì vá một dòng lỗi, và cách khắc phục.
+\end{itemize}
+
+\subsection{Chương 2: Phân tích nghiệp vụ, định hình MVP và khung JTBD}
+\begin{itemize}[leftmargin=1.5em]
+    \item Căn bệnh ``nhồi nhét tính năng'' (Feature Bloat): Nguồn gốc tâm lý và hậu quả làm tê liệt dự án.
+    \item Ứng dụng lý thuyết \textit{Jobs-to-be-Done (JTBD)}: Khai quật động lực ngầm và công việc thực sự mà người dùng muốn giải quyết.
+    \item Quy tắc cắt bỏ 50\% tính năng và phân loại MoSCoW:
+        - Must Have: Khóa chặt \textbf{ĐÚNG 1 tính năng sát thủ (Killer Feature)}.
+        - Won't Have: Danh sách đen các tính năng bị cấm tuyệt đối trong giai đoạn 1 (Auth, Dark mode, Payment, Social Share).
+    \item Cấu trúc tệp đặc tả kỹ thuật máy đọc (`spec.md`): Cách viết tài liệu để AI tuân thủ 100\% mà không tự biên tự diễn.
+    \item Kỹ thuật phỏng vấn ngược (\textit{Socratic Framing / /grill-me}): Ép AI đóng vai Giám đốc sản phẩm khó tính, truy vấn ngược lại các lỗ hổng tư duy của người phát triển.
+\end{itemize}
+
+\subsection{Chương 3: Giải phẫu hệ sinh thái tech stack: Khả năng, ranh giới và điểm yếu cốt tử}
+
+Đây là chương trọng tâm kỹ thuật, mổ xẻ từng công cụ theo 3 lát cắt: \textbf{Dùng để làm gì? Có thể làm được gì? Giới hạn và điểm nghẽn là gì?}
+
+\subsubsection{1. Công cụ kiểm thử và thị giác: Playwright}
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Bản chất}: Framework điều khiển trình duyệt không đầu (\textit{Headless Browser}) hiện đại nhất thế giới.
+    \item \textbf{Có thể làm được gì}:
+        - Tự động hóa tương tác chuột, bàn phím, cuộn trang giống hệt con người.
+        - Bắt chặn và phân tích các yêu cầu mạng (\textit{Network Interception}), kiểm tra mã lỗi HTTP 4xx/5xx và lỗi Console.
+        - Cơ chế tự động chờ phần tử (\textit{Auto-waiting}) thông minh, triệt tiêu lỗi do mạng chậm.
+        - Chụp ảnh màn hình toàn trang và so sánh trực quan (\textit{Visual Regression Testing}).
+    \item \textbf{Giới hạn và điểm yếu}:
+        - Tiêu tốn tài nguyên CPU/RAM lớn khi mở nhiều tiến trình Chromium đồng thời.
+        - Dễ bị đánh chặn bởi các hệ thống tường lửa (Cloudflare WAF, reCAPTCHA) nếu không áp dụng cờ Anti-Detection Stealth.
+        - Dễ sinh ra các bài test chập chờn (\textit{Flaky Tests}) nếu giao diện có hiệu ứng chuyển động animation phức tạp kéo dài.
+\end{itemize}
+
+\subsubsection{2. Kiến trúc giao tiếp dữ liệu: APIs (REST vs. Server Actions vs. FastAPI vs. tRPC)}
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{REST API}: Tiêu chuẩn kinh điển, dễ gỡ lỗi qua Postman/cURL, nhưng dễ gặp hiện tượng lấy thừa dữ liệu (\textit{Over-fetching}) hoặc thiếu dữ liệu (\textit{Under-fetching}).
+    \item \textbf{Next.js Server Actions}: Gọi hàm trực tiếp từ máy khách lên máy chủ mà không cần viết endpoint riêng, cực kỳ thân thiện với Vibecoding; nhưng có nguy cơ rò rỉ dữ liệu nhạy cảm nếu không kiểm tra thẩm quyền bên trong hàm.
+    \item \textbf{FastAPI (Python)}: Tốc độ xử lý siêu nhanh, tự động sinh tài liệu thử nghiệm tương tác (\textit{Swagger UI /docs}) giúp kiểm tra backend độc lập mà không cần giao diện; cực mạnh về xử lý dữ liệu và AI, nhưng quản lý trạng thái kết nối socket phức tạp hơn Node.js.
+    \item \textbf{Điểm nghẽn chung}: Xung đột chia sẻ tài nguyên nguồn gốc chéo (\textit{CORS errors}), giới hạn thời gian chờ (\textit{Serverless timeout 10--15s}), và lỗi tuần tự hóa dữ liệu phức tạp (\textit{JSON serialization limits}).
+\end{itemize}
+
+\subsubsection{3. Cơ sở dữ liệu và nền tảng dịch vụ backend: Supabase, PostgreSQL, SQLite}
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{PostgreSQL \& Supabase}: Cung cấp toàn bộ giải pháp từ cơ sở dữ liệu quan hệ, đăng nhập an toàn, lưu trữ tệp, đến cơ chế thông báo thời gian thực (\textit{Realtime WebSockets}). AI thuộc làu thư viện SDK của Supabase; tuy nhiên điểm nghẽn nằm ở cơ chế RLS nếu viết sai chính sách sẽ làm chậm truy vấn nghiêm trọng.
+    \item \textbf{SQLite \& Drizzle ORM}: Tối ưu cho ứng dụng cục bộ, nhẹ, không cần thiết lập máy chủ; nhưng bị khóa ghi đồng thời (\textit{Database lock}) nếu có hàng trăm yêu cầu ghi cùng một thời điểm.
+\end{itemize}
+
+\subsubsection{4. Giao diện người dùng: TypeScript, React/Next.js 15, Tailwind CSS, shadcn/ui}
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{TypeScript}: Đóng vai trò máy phát hiện ảo giác; compiler bắt lỗi đỏ ngay khi AI bịa ra thuộc tính không có thật.
+    \item \textbf{Tailwind CSS}: Triệt tiêu xung đột file CSS; AI không bao giờ làm hỏng trang A khi đang sửa trang B.
+    \item \textbf{shadcn/ui}: Kiến trúc sao chép mã nguồn mở (Copy-paste architecture) giúp AI tùy biến 100\% component mà không bị giới hạn bởi các gói nhị phân đóng kín.
+\end{itemize}
+
+\subsection{Chương 4: An ninh mã nguồn và phòng thủ lỗ hổng CWE/OWASP}
+\begin{itemize}[leftmargin=1.5em]
+    \item Phân tích số liệu từ \textit{Last Secure Code Benchmark} (arXiv:2610.14766): Tại sao 65\% mã do AI sinh ra dính lỗ hổng CWE Top 25?
+    \item 5 Lỗ hổng nguy hiểm nhất và cách phòng ngự thực chiến:
+        1. \textit{SQL Injection}: Kỹ thuật dùng ORM có tham số hóa và cấm tuyệt đối ghép chuỗi thô.
+        2. \textit{IDOR (Broken Object Level Authorization)}: Thiết lập Row Level Security (RLS) bắt buộc kiểm tra \texttt{auth.uid() = user\_id}.
+        3. \textit{Rò rỉ khóa bí mật (Secret Leaks)}: Bẫy đặt tên biến \texttt{NEXT\_PUBLIC\_} làm lộ API keys của bên thứ ba ra trình duyệt người dùng.
+        4. \textit{Cross-Site Scripting (XSS)}: Cấm dùng `dangerouslySetInnerHTML` không qua bộ lọc làm sạch (\textit{Sanitization}).
+        5. \textit{SSRF \& Tải tệp không an toàn}: Cách kiểm tra định dạng tệp và giới hạn URL máy chủ được phép gọi.
+    \item Thiết lập kịch bản Playwright kiểm toán bảo mật tự động trước khi triển khai.
+\end{itemize}
+
+\subsection{Chương 5: Thiết kế kiến trúc logic và khóa cứng bằng lược đồ (Schema-First)}
+\begin{itemize}[leftmargin=1.5em]
+    \item Triết lý \textit{Schema-First}: Định nghĩa cấu trúc dữ liệu trước, sinh logic sau.
+    \item Ứng dụng Pydantic và Zod làm cửa khẩu an ninh: Bắt chặt dữ liệu sai kiểu trước khi lọt vào hàm xử lý.
+    \item Máy trạng thái tường minh (\textit{Explicit State Machine}): Chuẩn hóa 4 trạng thái cho mọi màn hình (\textit{Idle $\to$ Loading $\to$ Success $\to$ Error/Empty}).
+    \item Quy tắc nguyên tử hóa: Không một tệp tin nào được vượt quá 200 dòng mã; kỹ thuật chia tách mô-đun để bảo toàn bộ nhớ của AI.
+    \item Xử lý lỗi linh hoạt (\textit{Resilient Error Handling}): Cơ chế ngắt mạch (\textit{Circuit Breaker}) và thông báo lỗi có định hướng hành động.
+\end{itemize}
+
+\subsection{Chương 6: Nguyên lý thiết kế UX/UI chuyên nghiệp: Diệt trừ chất "nhựa" thị giác}
+\begin{itemize}[leftmargin=1.5em]
+    \item Phẫu thuật các dấu hiệu của giao diện rác (\textit{AI Slop}): Gradient tím lịm, nôn mửa icon, card lồng card (\textit{Cardocalypse}), độ tương phản vi phạm chuẩn WCAG AA.
+    \item Hệ thống màu tối giản 60--30--10: 60\% nền xám/trắng trung tính, 30\% cấu trúc văn bản đen xám, 10\% màu điểm nhấn độc nhất.
+    \item Nhịp điệu khoảng trắng (The 8px Spatial Grid): Spacing là oxy của giao diện; cách dùng khoảng trống để tạo phân cấp thông tin.
+    \item Phân cấp kiểu chữ chuẩn mực: Sử dụng họ font hình học sạch sẽ (Inter, Geist, Roboto), phân cấp bằng độ đậm (\textit{Font Weight}) thay vì đổi màu tùy tiện.
+    \item Kỹ thuật audit giao diện tự động bằng Playwright script để quét sạch gradient tím và card lồng nhau trước khi ra mắt.
+\end{itemize}
+
+\subsection{Chương 7: Mindful vibecoding và hệ điều hành tự chủ}
+\begin{itemize}[leftmargin=1.5em]
+    \item Hồ sơ kiến trúc bắt buộc: Cấu trúc tệp `TECH\_STACK.md` và cách biến nó thành la bàn định hướng cho AI.
+    \item Quy tắc 2 lần thử (\textit{The 2-Strike Git Reset Rule}): Ngăn chặn vòng xoáy ảo giác sửa lỗi mù bằng `git reset --hard HEAD`.
+    \item Phương pháp lưu vết nguyên tử (Atomic Checkpointing): 1 Tính năng = 1 Commit; dùng Git như nút lưu game an toàn.
+    \item Kỹ thuật truy cứu nguyên nhân gốc rễ (\textit{Root-Cause Post-Mortem}): Dừng AI lại để học hỏi nguyên lý kiến trúc sau mỗi con bug.
+    \item Tự chủ hóa tuyệt đối (\textit{Zero-Touch}): Cấu hình PreToolUse Hooks và chính sách `always-proceed` để AI thực thi xuyên suốt mà không làm phiền người dùng.
+\end{itemize}
+
+\section{Kế hoạch biên soạn và lộ trình hoàn thiện}
+
+Bộ giáo trình sẽ được hoàn thiện tuần tự theo các cột mốc sau:
+\begin{enumerate}[label={\arabic*.}]
+    \item \textbf{Cột mốc 1 (Cốt lõi kiến trúc)}: Hoàn thành Chương 3 (Giải phẫu Tech Stack: Playwright, APIs, Database, Frontend) và Chương 4 (An ninh mã nguồn \& Phòng thủ CWE).
+    \item \textbf{Cột mốc 2 (Nghiệp vụ \& Logic)}: Hoàn thành Chương 2 (Phân tích nghiệp vụ JTBD \& MVP Scoping) và Chương 5 (Kiến trúc Logic \& Schema-First).
+    \item \textbf{Cột mốc 3 (Trải nghiệm \& Vận hành)}: Hoàn thành Chương 6 (UX/UI chuyên nghiệp chống nhựa) và Chương 7 (Mindful Vibecoding \& Hệ điều hành tự chủ).
+    \item \textbf{Cột mốc 4 (Ấn bản tổng hợp)}: Biên tập Chương 1 (Khởi nguyên \& Bản chất nhận thức) và đóng gói toàn bộ 7 chương thành cuốn đại giáo trình hoàn chỉnh (\texttt{sach\_tong\_hop/giao\_trinh\_vibecoding\_toan\_dien.pdf}).
+\end{enumerate}
+
+\section{Tài liệu tham khảo học thuật}
+
+\begin{enumerate}[label={[\arabic*]}]
+    \item Karpathy, A. (2025). \textit{Vibe Coding and Software Development in the AI Era}. Technical Essay.
+    \item Wu, T., Ge, C., Chen, P., et al. (2026). \textit{Last Secure Code Benchmark: Is the Code You Vibe Secure?} arXiv preprint arXiv:2610.14766.
+    \item arXiv:2609.23859 (2026). \textit{Vibe-GUIDE: A Graph-based User Interface in IDEs for Oversight in Vibe Coding}.
+    \item arXiv:2609.29410 (2026). \textit{Large Language Models for Programming: Actually Fixing or Reimplementing Incorrect Code?}
+    \item arXiv:2608.10622 (2026). \textit{A Study of Cursorrules Files in GitHub Open Source Projects}.
+    \item Christensen, C. M., Hall, T., Dillon, K., \& Duncan, D. S. (2016). \textit{Competing against luck: The story of innovation and customer choice (Jobs to be Done)}. HarperBusiness.
+    \item Norman, D. (2013). \textit{The Design of Everyday Things: Revised and Expanded Edition}. Basic Books.
+\end{enumerate}
+
+\end{document}

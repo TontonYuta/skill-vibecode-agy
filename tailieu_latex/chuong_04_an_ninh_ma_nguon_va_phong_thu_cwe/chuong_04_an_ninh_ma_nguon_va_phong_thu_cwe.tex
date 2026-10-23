@@ -1,0 +1,186 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{mathptmx}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{ragged2e}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
+\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!5},
+  rulecolor=\color{gray!40},
+  keywordstyle=\bfseries\color{blue!70!black},
+  commentstyle=\itshape\color{green!50!black},
+  stringstyle=\color{red!60!black},
+  showstringspaces=false
+}
+
+\title{\textbf{Chương 4: An Ninh Mã Nguồn Trong Kỷ Nguyên Vibecoding}\\[0.3em]
+\large\textit{Phòng Thủ Các Lỗ Hổng Phổ Biến CWE, OWASP và Bảo Mật Toàn Vẹn Hệ Thống}}
+\author{\textbf{Giáo Trình Kỹ Nghệ Vibecoding Chuyên Sâu 2026}}
+\date{Tháng 10 Năm 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Mặt tối nguy hiểm nhất của phương thức lập trình phụ thuộc vào trí tuệ nhân tạo là vấn đề an ninh phần mềm. Các mô hình LLM được huấn luyện để tạo ra đoạn mã ``hoạt động được về mặt chức năng'' (\textit{functional correctness}), nhưng thường xuyên bỏ qua các rào chắn phòng thủ chiều sâu. Dựa trên dữ liệu thực nghiệm từ nghiên cứu \textit{Last Secure Code Benchmark} (arXiv:2610.14766, 2026), chương này giải phẫu 5 nhóm lỗ hổng bảo mật nghiêm trọng nhất mà AI thường tạo ra (CWE Top 25 / OWASP Top 10), đồng thời cung cấp các giải pháp phòng thủ kiến trúc chuẩn mực và quy trình kiểm toán tự động trước khi triển khai.
+\end{abstract}
+
+\vspace{1em}
+\rule{\textwidth}{0.4pt}
+
+\section{Bức tranh an ninh thực tế: Nghịch lý của mã nguồn do AI sinh ra}
+
+Nghiên cứu thực nghiệm quy mô lớn của nhóm tác giả \textit{Last Secure Code Benchmark (arXiv:2610.14766, 2026)} trên hơn 1.500 tác vụ phát triển thực tế sử dụng các mô hình ngôn ngữ hàng đầu đã công bố một con số báo động:
+\begin{center}
+\fbox{\parbox{0.85\textwidth}{
+\textbf{Thực trạng an ninh mã nguồn AI (2026):}\\
+\textit{Hơn 65\% các đoạn mã chức năng do AI sinh ra đạt yêu cầu kiểm thử đơn vị nhưng lại chứa ít nhất một lỗ hổng bảo mật nghiêm trọng thuộc danh mục CWE (Common Weakness Enumeration).}
+}}
+\end{center}
+
+Nguyên nhân cốt lõi là do mục tiêu tối ưu hóa của mô hình: LLM ưu tiên con đường ngắn nhất để thỏa mãn mô tả của prompt. Khi người dùng yêu cầu: \textit{``Tạo cho tôi một hàm lấy thông tin người dùng theo ID''}, AI sẽ viết câu lệnh truy vấn trực tiếp mà không hề tự động bổ sung kiểm tra quyền sở hữu (\textit{authorization check}) hay lọc dữ liệu đầu vào (\textit{input sanitization}) trừ khi được yêu cầu rõ ràng.
+
+\section{Giải phẫu Top 5 lỗ hổng bảo mật chí mạng trong Vibecoding}
+
+\subsection{1. CWE-89: SQL Injection \& ORM Bypass}
+Mặc dù ngày nay các thư viện ORM (như Prisma, Drizzle, SQLAlchemy) rất phổ biến, AI vẫn thường xuyên sinh ra các lỗ hổng chèn mã SQL khi người dùng yêu cầu các truy vấn phức tạp hoặc tìm kiếm linh hoạt:
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Cơ chế lỗi}: AI sử dụng nối chuỗi ký tự (\textit{template literals} trong JS hoặc \textit{f-strings} trong Python) bên trong các câu lệnh truy vấn thô (\texttt{prisma.\$queryRawUnsafe} hoặc \texttt{connection.query()}).
+\end{itemize}
+
+\begin{lstlisting}[language=python, caption={Ví dụ mã lỗi nguy hiểm do AI tự ý sinh ra}]
+# MA NGUON NGUY HIEM DO AI SINH RA
+@app.get("/api/search")
+async def search_users(q: str):
+    # Lo hong CWE-89: Noi chuoi SQL truc tiep
+    query = f"SELECT id, username, email FROM users WHERE username LIKE '%{q}%'"
+    return await db.fetch_all(query)
+\end{lstlisting}
+
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Giải pháp phòng thủ}: Bắt buộc sử dụng truy vấn có tham số hóa (\textit{Parameterized Queries}) hoặc các phương thức dựng sẵn an toàn của ORM. Tuyệt đối không dùng các hàm có hậu tố \texttt{Unsafe}.
+\end{itemize}
+
+\subsection{2. CWE-639 / CWE-862: IDOR \& BOLA (Thiếu phân quyền mức đối tượng)}
+Lỗ hổng tham chiếu đối tượng trực tiếp không an toàn (\textit{Insecure Direct Object Reference - IDOR}) là lỗi phổ biến nhất trong các ứng dụng vibecode:
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Cơ chế lỗi}: AI tạo ra endpoint xem chi tiết tài liệu \texttt{GET /api/documents/:id}. Hàm này truy vấn bản ghi theo \texttt{id} được truyền vào từ URL, nhưng \textbf{không kiểm tra xem tài liệu đó có thuộc về người dùng đang đăng nhập hay không}.
+    \item \textbf{Hậu quả}: Kẻ tấn công chỉ cần thay đổi số ID trên thanh địa chỉ trình duyệt là có thể đọc trộm toàn bộ hợp đồng, đề thi hoặc thông tin cá nhân của người dùng khác.
+    \item \textbf{Giải pháp phòng thủ}: Luôn ràng buộc điều kiện quyền sở hữu ngay trong mệnh đề \texttt{WHERE}:
+    \begin{center}
+    \texttt{WHERE id = :document\_id AND user\_id = :current\_authenticated\_user\_id}
+    \end{center}
+\end{itemize}
+
+\subsection{3. CWE-284: Bỏ quên Row Level Security (RLS) trong Supabase}
+Supabase là nền tảng Backend-as-a-Service được cộng đồng vibecoding ưa chuộng nhất nhờ tốc độ triển khai. Tuy nhiên, kiến trúc của Supabase phơi bày trực tiếp API qua PostgREST với khóa \texttt{anon\_key}.
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Cơ chế lỗi}: Khi AI tạo một bảng mới (ví dụ \texttt{user\_profiles} hoặc \texttt{exam\_results}), nó chỉ tạo cấu trúc cột mà quên thực thi lệnh kích hoạt bảo mật mức hàng.
+    \item \textbf{Hậu quả}: Toàn bộ dữ liệu trong bảng bị công khai hoàn toàn trên Internet. Bất kỳ ai có khóa \texttt{anon\_key} (vốn được nhúng công khai ở máy khách) đều có thể tải về toàn bộ cơ sở dữ liệu bằng một lệnh \texttt{curl}.
+\end{itemize}
+
+\begin{lstlisting}[language=sql, caption={Quy chuẩn kích hoạt RLS bắt buộc cho mọi bảng trong Supabase}]
+-- 1. Kich hoat RLS cho bang
+ALTER TABLE exam_results ENABLE ROW LEVEL SECURITY;
+
+-- 2. Thiet lap chinh sach chi cho phep chu so huu doc du lieu
+CREATE POLICY "Users can only read their own exam results"
+ON exam_results
+FOR SELECT
+USING (auth.uid() = user_id);
+\end{lstlisting}
+
+\subsection{4. CWE-798 \& CWE-200: Rò rỉ khóa bí mật qua biến môi trường công khai}
+Trong các framework như Next.js, Vite hay Nuxt, các biến môi trường có tiền tố đặc biệt (như \texttt{NEXT\_PUBLIC\_} hoặc \texttt{VITE\_}) sẽ được trình đóng gói (\textit{bundler}) tự động chèn trực tiếp vào các tệp JavaScript tĩnh tải về máy khách:
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Cơ chế lỗi}: Khi cần gọi một dịch vụ AI hoặc thanh toán, AI thường gợi ý người dùng đặt:
+    \begin{center}
+    \texttt{NEXT\_PUBLIC\_GEMINI\_API\_KEY=AIzaSy...} hoặc \texttt{NEXT\_PUBLIC\_STRIPE\_SECRET\_KEY=sk\_live\_...}
+    \end{center}
+    \item \textbf{Hậu quả}: Toàn bộ người truy cập web có thể mở công cụ F12 (Developer Tools) và lấy cắp khóa API của bạn, gây thiệt hại hàng nghìn USD chi phí tài khoản chỉ trong vài giờ.
+    \item \textbf{Nguyên tắc phòng thủ}: Khóa bí mật chỉ được lưu trong biến không có tiền tố công khai, và chỉ được đọc trong môi trường máy chủ (\textit{Server Components}, \textit{Route Handlers} hoặc Backend riêng biệt).
+\end{itemize}
+
+\subsection{5. CWE-918: Server-Side Request Forgery (SSRF) \& Prompt Injection gián tiếp}
+Khi xây dựng các tính năng như ``Cung cấp link bài báo để AI tóm tắt'', mã nguồn AI thường dùng \texttt{fetch(user\_url)} trực tiếp từ máy chủ.
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Cơ chế lỗi}: Kẻ tấn công cung cấp địa chỉ IP nội bộ như \texttt{http://169.254.169.254/latest/meta-data/} (địa chỉ metadata nhạy cảm của AWS) hoặc \texttt{http://127.0.0.1:6379} (cổng Redis nội bộ). Máy chủ sẽ tự động gửi yêu cầu đến chính các dịch vụ nội bộ này và trả dữ liệu bí mật ra ngoài.
+    \item \textbf{Giải pháp phòng thủ}: Thiết lập danh sách tên miền được phép (\textit{Domain Whitelist}), chặn toàn bộ dải IP riêng tư (Private IP Ranges: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.1).
+\end{itemize}
+
+\section{Ma trận kiểm soát an ninh mã nguồn cho quy trình Vibecoding}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Quy trình kiểm soát an ninh đa tầng trước khi xuất bản mã nguồn}
+\vspace{0.5em}
+\begin{tabularx}{\textwidth}{L{3cm} L{5cm} Y}
+\toprule
+\textbf{Tầng kiểm soát} & \textbf{Công cụ \& Kỹ thuật} & \textbf{Mục tiêu ngăn chặn} \\
+\midrule
+\textbf{1. Tiền biên dịch (Pre-commit)} & \texttt{git-secrets}, TruffleHog, Gitleaks & Chặn đứng việc commit khóa API, chuỗi kết nối cơ sở dữ liệu lên Git \\
+\textbf{2. Phân tích tĩnh (SAST)} & SonarQube, Semgrep, ESLint Security Rules & Tự động phát hiện SQLi, cấu hình lỏng lẻo và các hàm độc hại \\
+\textbf{3. Ranh giới mạng} & CORS Origin Whitelist nghiêm ngặt, Cookie \texttt{SameSite=Strict; HttpOnly} & Ngăn chặn rò rỉ dữ liệu qua tên miền lạ và chống tấn công CSRF \\
+\textbf{4. Kiểm thử thâm nhập (Agentic Pentest)} & Playwright Security Audit Suite, ZAP Scanner & Tự động thử nghiệm đổi ID tài nguyên (IDOR) để xác nhận mã 403 Forbidden \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Cây quyết định: Thiết lập thế trận phòng thủ theo loại hình ứng dụng}
+
+Không phải mọi ứng dụng đều đòi hỏi chi phí bảo mật phức tạp như nhau. Lập trình viên cần căn cứ vào quy mô và mức độ nhạy cảm của dữ liệu để lựa chọn thế trận phòng thủ tối ưu:
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Cây quyết định thiết lập thế trận phòng thủ an ninh mã nguồn}
+\vspace{0.5em}
+\begin{tabularx}{\textwidth}{L{3.2cm} L{3.8cm} L{4.5cm} Y}
+\toprule
+\textbf{Thế trận phòng thủ} & \textbf{Đặc trưng dữ liệu} & \textbf{Hàng rào an ninh bắt buộc} & \textbf{Chi phí triển khai} \\
+\midrule
+\textbf{Thế trận 1: Công cụ Công khai (Public Read-Only)} & Dữ liệu mở, không có tài khoản người dùng cá nhân (ví dụ: tra cứu đề thi) & Rate Limiting (Cloudflare / Upstash), ẩn API Key ở Backend, chặn SSRF IP nội bộ & Thấp: thiết lập trong vòng 15 phút \\
+\textbf{Thế trận 2: Tiện ích Cục bộ (Local-First Offline)} & Dữ liệu người dùng lưu trực tiếp trên máy (SQLite, IndexedDB) & Mã hóa tệp DB nếu nhạy cảm, không mở cổng mạng công khai, kiểm tra quyền file & Rất thấp: không có rủi ro tấn công qua mạng Internet \\
+\textbf{Thế trận 3: Nền tảng SaaS Đa Khách Hàng (Multi-Tenant)} & Dữ liệu tài chính, người dùng khác nhau chia sẻ chung database & RLS Supabase bắt buộc, kiểm tra quyền sở hữu IDOR ở mọi endpoint, Cookie HttpOnly & Cao: đòi hỏi kiểm thử tự động Pentest trước khi deploy \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Kịch bản thực hành đồng hành: cwe\_security\_scanner.py}
+Thư mục chương cung cấp sẵn công cụ \texttt{cwe\_security\_scanner.py}. Đây là một cổng gác an ninh (\textit{security gatekeeper}) tự động quét mã nguồn dự án để phát hiện 5 lỗ hổng CWE điển hình của AI (SQLi, IDOR, rò rỉ \texttt{NEXT\_PUBLIC\_}, SSRF, hardcoded keys). Khi phát hiện lỗ hổng nghiêm trọng, công cụ trả về Exit Code 1 và xuất báo cáo JSON máy đọc để tác tử AI tự động chẩn đoán và khắc phục.
+
+\section{Tổng kết chương và bài tập thực hành}
+
+\subsection{Tóm tắt cốt lõi}
+\begin{itemize}[leftmargin=1.5em]
+    \item Không bao giờ tin tưởng tính an toàn của mã nguồn do AI tự động sinh ra; functional correctness không đồng nghĩa với security compliance.
+    \item Luôn kiểm tra phân quyền sở hữu tài nguyên ở từng truy vấn cơ sở dữ liệu để triệt tiêu lỗ hổng IDOR.
+    \item Trong Supabase, mọi bảng dữ liệu đều bắt buộc phải kích hoạt RLS kèm theo các Policy cụ thể.
+    \item Phân biệt tuyệt đối giữa biến môi trường máy chủ và máy khách; không bao giờ đưa khóa bí mật vào biến \texttt{NEXT\_PUBLIC\_}.
+\end{itemize}
+
+\subsection{Bài tập thực hành}
+\begin{enumerate}[label={\arabic*.}]
+    \item \textbf{Kiểm toán Supabase RLS}: Viết một câu truy vấn SQL kiểm tra toàn bộ danh sách các bảng trong database của bạn xem bảng nào chưa bật \texttt{rowsecurity}.
+    \item \textbf{Rà soát biến môi trường}: Quét toàn bộ mã nguồn frontend của bạn để tìm xem có khóa dịch vụ bí mật nào bị gắn tiền tố \texttt{NEXT\_PUBLIC\_} hay không.
+    \item \textbf{Viết bài kiểm thử IDOR bằng Playwright}: Thiết lập một kịch bản kiểm thử: Đăng nhập với Tài khoản A, sau đó gửi yêu cầu truy cập tài nguyên của Tài khoản B. Bài kiểm thử chỉ vượt qua khi máy chủ trả về mã lỗi HTTP 403 hoặc 404.
+\end{enumerate}
+
+\end{document}

@@ -113,7 +113,27 @@ Tất cả các case study và phân tích kỹ thuật chuyên sâu được l�
 6. 🎨 [`06-anti-ai-slop-ui-engineering.md`](playbooks/06-anti-ai-slop-ui-engineering.md): **Tiêu diệt AI Slop**: Cách dùng `DESIGN.md`, `UX.md` và Playwright headless để quét sạch gradient tím, Cardocalypse và text mờ.
 7. 🧠 [`07-socratic-prompting-and-grill-me.md`](playbooks/07-socratic-prompting-and-grill-me.md): **Kỹ thuật phỏng vấn ngược (/grill-me)**: Ép AI chất vấn ngược người dùng về edge cases và data consistency trước khi bắt tay viết code.
 8. 🎯 [`08-business-analysis-and-mvp-scoping.md`](playbooks/08-business-analysis-and-mvp-scoping.md): **Phân tích nghiệp vụ & Chống nhồi nhét tính năng**: Khung Jobs-to-be-Done (JTBD), Khung MoSCoW, Quy tắc cắt bỏ 50% tính năng, và chiến lược khóa chặt 1 Killer Feature cho bản MVP để chống vỡ trận.
-9. 🧭 [`09-mindful-vibecoding-and-tech-stack-mastery.md`](playbooks/09-mindful-vibecoding-and-tech-stack-mastery.md): **Mindful Vibecoding & Làm chủ kiến trúc**: Xóa bỏ hội chứng "mù công nghệ", giao thức `TECH_STACK.md` bắt buộc, quy tắc 2-Strike Git Reset chống vòng xoáy sửa lỗi mù, và kỹ thuật Root-Cause Post-Mortem.
+10. ⚡ [`10-playwright-python-and-self-healing-loop.md`](playbooks/10-playwright-python-and-self-healing-loop.md): **Playwright, Python & Vòng Lặp Self-Healing**: 7 siêu năng lực Playwright, so sánh với Crawl4AI/HTTPX, và kịch bản bắt 4 kênh lỗi để AI tự sửa mã nguồn.
+11. 🥷 [`11-hacker-vibecoding-open-source-and-scripting.md`](playbooks/11-hacker-vibecoding-open-source-and-scripting.md): **Hacker Scripting & Lắp Ghép Nguồn Mở**: Linux Pipes (FIFO), Signal Traps, Windows PowerShell .NET Object Pipeline, Win32 P/Invoke, AutoHotkey, ADB/scrcpy, yt-dlp, FFmpeg và LibreOffice headless.
+12. 🚀 [`12-ai-studio-opencode-and-9router-pipeline.md`](playbooks/12-ai-studio-opencode-and-9router-pipeline.md): **Quy Trình Tạo Mẫu Thần Tốc**: Google AI Studio Apps (MVP 30s) $\rightarrow$ OpenCode TUI refactor $\rightarrow$ 9Router thông minh chống lỗi 429 và nén token RTK.
+13. 📚 [`13-master-open-source-weapon-encyclopedia.md`](playbooks/13-master-open-source-weapon-encyclopedia.md): **Đại Thư Viện Vũ Khí Nguồn Mở 2026**: Bách khoa toàn thư hơn 50+ công cụ nguồn mở tối thượng được phân loại theo 9 miền bài toán.
+
+---
+
+## 📖 Đại Giáo Trình Vibecoding Toàn Diện (21 Trang LaTeX PDF & Bộ Công Cụ Đồng Hành)
+
+Dự án cung cấp bộ giáo trình chuẩn mực in ấn học thuật tại thư mục [`tailieu_latex/`](tailieu_latex/):
+
+- 📕 **Tập Sách Hoàn Chỉnh**: [`giao_trinh_vibecoding_toan_dien.pdf`](tailieu_latex/sach_tong_hop/giao_trinh_vibecoding_toan_dien.pdf) (21 trang A4, biên dịch 2-pass có mục lục động và trích dẫn 28 paper arXiv 2026).
+- 🧩 **7 Cây Quyết Định (Decision Trees)**: Định hướng người học tự chọn lối đi (Micro-SaaS 24h vs Kỹ sư Tự trị vs Hacker Cục bộ Offline).
+- 🛠️ **Bộ Kịch Bản & Mã Nguồn Đồng Hành Cho Từng Chương**:
+  - `Chương 1`: [`token_budget_calculator.py`](tailieu_latex/chuong_01_khoi_nguyen_va_ban_chat_vibecoding/token_budget_calculator.py) - Đo độ suy giảm chú ý ngữ cảnh và tính giá API 2026.
+  - `Chương 2`: [`socratic_spec_builder.py`](tailieu_latex/chuong_02_phan_tich_nghiep_vu_va_mvp_scoping/socratic_spec_builder.py) - CLI tạo `spec.md` chuẩn JTBD và Non-Goals.
+  - `Chương 3`: [`paper_harvester.py`](tailieu_latex/chuong_03_giai_phau_tech_stack_kha_nang_va_han_che/paper_harvester.py) & [`self_healing_test_runner.py`](tailieu_latex/chuong_03_giai_phau_tech_stack_kha_nang_va_han_che/self_healing_test_runner.py) - Thu thập arXiv siêu tốc và kiểm thử tự sửa lỗi qua 4 kênh lỗi.
+  - `Chương 4`: [`cwe_security_scanner.py`](tailieu_latex/chuong_04_an_ninh_ma_nguon_va_phong_thu_cwe/cwe_security_scanner.py) - Quét 5 lỗ hổng bảo mật CWE của AI (SQLi, IDOR, rò rỉ secret, SSRF, RLS).
+  - `Chương 5`: [`state_machine_contract_demo.ts`](tailieu_latex/chuong_05_kien_truc_logic_va_schema_first/state_machine_contract_demo.ts) - Schema-First với Zod, Máy trạng thái 4 bước và AICircuitBreaker.
+  - `Chương 6`: [`anti_slop_design_system_demo.html`](tailieu_latex/chuong_06_nguyen_ly_thiet_ke_ux_ui_chong_nhua/anti_slop_design_system_demo.html) - Trang demo so sánh trực quan AI Slop vs Artisan UI.
+  - `Chương 7`: Bộ 4 công cụ OS Internals ([`hacker_linux_daemon.sh`](tailieu_latex/chuong_07_mindful_vibecoding_va_quy_trinh_tu_chu/hacker_linux_daemon.sh), [`mobile_adb_controller.py`](tailieu_latex/chuong_07_mindful_vibecoding_va_quy_trinh_tu_chu/mobile_adb_controller.py), [`media_transcriber_pipeline.py`](tailieu_latex/chuong_07_mindful_vibecoding_va_quy_trinh_tu_chu/media_transcriber_pipeline.py), [`office_headless_converter.sh`](tailieu_latex/chuong_07_mindful_vibecoding_va_quy_trinh_tu_chu/office_headless_converter.sh)).
 
 ---
 

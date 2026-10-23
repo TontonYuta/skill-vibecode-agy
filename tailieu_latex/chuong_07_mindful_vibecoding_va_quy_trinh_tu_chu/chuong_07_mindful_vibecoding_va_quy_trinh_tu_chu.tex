@@ -1,0 +1,224 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{mathptmx}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{ragged2e}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
+\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!5},
+  rulecolor=\color{gray!40},
+  keywordstyle=\bfseries\color{blue!70!black},
+  commentstyle=\itshape\color{green!50!black},
+  stringstyle=\color{red!60!black},
+  showstringspaces=false
+}
+
+\title{\textbf{Chương 7: Chuyên Sâu Scripting, OS Internals \& Quy Trình Tự Chủ Vòng Lặp Kép}\\[0.3em]
+\large\textit{Nghệ Thuật Hacker Linux \& Windows, Vòng Lặp Tự Phục Hồi Khép Kín và Bằng Chứng Thực Nghiệm 2026}}
+\author{\textbf{Giáo Trình Kỹ Nghệ Vibecoding Chuyên Sâu 2026}}
+\date{Tháng 10 Năm 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Đỉnh cao của một kỹ sư Vibecoding thực chiến không chỉ dừng lại ở việc ghép nối các API bề mặt, mà nằm ở năng lực làm chủ tầng sâu của hệ điều hành: điều phối luồng dữ liệu Unix (Pipes, FIFO, Signals, inotify) trên Linux và làm chủ đường ống đối tượng (.NET Object Pipeline, COM, WMI, P/Invoke) trên Windows. Dựa trên các công trình nghiên cứu hệ thống mới nhất năm 2026 (\textit{arXiv:2609.11999, arXiv:2610.16460}), chương học bóc tách tường minh cơ chế điều khiển hệ điều hành cấp thấp, đồng thời thiết lập quy chuẩn vận hành vòng lặp tự phục hồi khép kín (\textit{Self-Healing Loop-until-green}) biến AI thành một cỗ máy tự chẩn đoán và tự sửa mã nguồn hoàn toàn tự chủ.
+\end{abstract}
+
+\vspace{1em}
+\rule{\textwidth}{0.4pt}
+
+\section{Bằng Chứng Thực Nghiệm 2026: Tại Sao Shell/CLI Đánh Bại Mọi Công Cụ Bọc Sẵn?}
+
+Nghiên cứu mang tính bước ngoặt của nhóm tác giả \textit{Mak và cộng sự (arXiv:2609.11999, 2026)} mang tiêu đề: \textit{``Is Bash All You Need? An Empirical Study of Tool Interfaces for Enterprise Digital Worker Agents''} đã công bố một phát hiện thực nghiệm chấn động:
+\begin{center}
+\fbox{\parbox{0.88\textwidth}{
+\textbf{Kết luận thực nghiệm từ arXiv:2609.11999 (2026):}\\
+\textit{Các tác tử AI sử dụng giao diện dòng lệnh thuần túy (Shell/Bash) đạt tỷ lệ hoàn thành tác vụ cao hơn 38\% và tiết kiệm 42\% token ngữ cảnh so với việc sử dụng các công cụ bọc API chuyên biệt (wrapper tool calling). Khả năng ghép nối dữ liệu qua đường ống (piping) cho phép AI giải quyết các tình huống biến đổi linh hoạt mà không bị kẹt trong các định dạng tĩnh.}
+}}
+\end{center}
+
+Kết hợp cùng khảo sát thực tế từ \textit{arXiv:2610.16460 (2026)}, mô hình phát triển phần mềm bằng cách lắp ghép các công cụ cục bộ (\textit{Local-first toolchain via expert-led vibe coding}) cho phép một người không chuyên tự tạo ra công cụ đạt độ trễ cực thấp (0.94 giây) và vận hành bền bỉ 100\% offline.
+
+\section{Linux Hacker Scripting: Nghệ Thuật Đường Ống Unix và IPC}
+
+Trong triết lý Unix, mọi thứ đều là tệp (\textit{Everything is a file}), và sức mạnh tối thượng đến từ việc xâu chuỗi các chương trình nhỏ đơn nhiệm:
+
+\subsection{1. Quản lý File Descriptors (FD) và Chuyển hướng luồng}
+Mọi tiến trình Linux mặc định mở 3 kênh: FD 0 (\texttt{stdin}), FD 1 (\texttt{stdout}), và FD 2 (\texttt{stderr}):
+\begin{itemize}[leftmargin=1.5em]
+    \item Chuyển cả kênh lỗi và kênh xuất chuẩn vào tệp log: \texttt{command > run.log 2>\&1} (hoặc dạng ngắn: \texttt{command \&> run.log}).
+    \item Triệt tiêu hoàn toàn output rác: \texttt{command > /dev/null 2>\&1}.
+\end{itemize}
+
+\subsection{2. Đường ống có tên (Named Pipe - FIFO) cho Giao tiếp Liên tiến trình (IPC)}
+Khi cần giao tiếp dữ liệu hai chiều bất đồng bộ giữa AI Agent và một tiến trình ngầm mà không cần mở cổng mạng:
+\begin{lstlisting}[language=bash, caption={Co che Named Pipe FIFO va mo File Descriptor 3 tranh nghan EOF}]
+# 1. Khoi tao duong ong FIFO
+mkfifo /tmp/agent_ipc.pipe
+
+# 2. Mo File Descriptor 3 doc/ghi de tranh EOF khi writer ngat ket noi
+exec 3<>/tmp/agent_ipc.pipe
+
+# 3. Doc du lieu bat dong bo
+while read -r event <&3; do
+    echo "Nhan su kien: $event"
+    # Kich hoat hanh dong xu ly tu dong
+done
+\end{lstlisting}
+
+\subsection{3. Bẫy tín hiệu hệ thống (Signal Trapping với trap)}
+Một kịch bản tự động hóa chuyên nghiệp bắt buộc phải bắt các tín hiệu \texttt{SIGINT} (Ctrl+C), \texttt{SIGTERM} (lệnh kill) để tự dọn dẹp tiến trình con và tệp tạm:
+\begin{lstlisting}[language=bash, caption={Dang ky bay tin hieu Graceful Shutdown tren Linux}]
+cleanup() {
+    echo "Bat tin hieu dung. Dang don dep tien trinh con va file lock..."
+    rm -f /tmp/agent_*.lock
+    exit 0
+}
+trap cleanup SIGINT SIGTERM EXIT
+\end{lstlisting}
+
+\subsection{4. Xử lý sự kiện tệp thời gian thực với inotifywait và xargs song song}
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Hot-reload Daemon}: Lắng nghe thư mục mã nguồn và tự kích hoạt bài test mỗi khi có thao tác lưu tệp:
+    \begin{center}
+    \texttt{while inotifywait -e modify,create ./src/; do pytest tests/; done}
+    \end{center}
+    \item \textbf{Xử lý song song đa luồng}: Dùng \texttt{xargs -P 8} để tận dụng toàn bộ 8 nhân CPU nén hàng trăm tệp video bằng FFmpeg cùng một lúc:
+    \begin{center}
+    \texttt{ls *.mp4 | xargs -n 1 -P 8 -I \{\} ffmpeg -i \{\} -crf 24 optimized\_\{\}}
+    \end{center}
+\end{itemize}
+
+\section{Windows Hacker Scripting: Sức Mạnh PowerShell \& Object Pipeline}
+
+Khác với Linux (nơi dữ liệu di chuyển dưới dạng chuỗi ký tự thô), **PowerShell trên Windows là một đường ống đối tượng (.NET Object Pipeline)**:
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Đối chiếu bản chất giữa Linux Bash và Windows PowerShell}
+\vspace{0.5em}
+\begin{tabularx}{\textwidth}{L{3cm} L{5cm} Y}
+\toprule
+\textbf{Đặc tính} & \textbf{Linux Bash} & \textbf{Windows PowerShell} \\
+\midrule
+\textbf{Bản chất dòng dữ liệu} & Luồng ký tự thô (\textit{Plain text streams}) & Đối tượng .NET có cấu trúc (\textit{.NET Typed Objects}) \\
+\textbf{Cơ chế xử lý \& lọc} & Sử dụng các công cụ văn bản (\texttt{grep}, \texttt{sed}, \texttt{awk}, \texttt{cut}) & Truy cập trực tiếp thuộc tính (\texttt{Where-Object}, \texttt{Select-Object}) \\
+\textbf{Tương tác API lõi} & Qua System Calls (\texttt{glibc}, POSIX) & Qua .NET Framework, P/Invoke, COM, WMI/CIM \\
+\textbf{Tự động hóa GUI} & Thao tác qua X11/Wayland CLI tools & Bắt Native Hook phím chuột qua \textbf{AutoHotkey (AHK)} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{1. Lọc dữ liệu hướng đối tượng trong PowerShell}
+Lập trình viên không cần dùng regex để parse chuỗi văn bản:
+\begin{lstlisting}[language=bash, caption={Loc tien trinh tren Windows theo bo nho dung luong lon}]
+# Loc cac tien trinh ngon tren 200MB RAM va sap xep giam dan
+Get-Process | Where-Object { $_.WorkingSet -gt 200MB } | 
+    Select-Object Name, Id, @{Name="RAM_MB"; Expression={$_.WorkingSet / 1MB}} | 
+    Sort-Object RAM_MB -Descending
+\end{lstlisting}
+
+\subsection{2. P/Invoke: Gọi trực tiếp Win32 Native API}
+PowerShell cho phép nhúng mã C\# để gọi trực tiếp các hàm từ \texttt{user32.dll} hoặc \texttt{kernel32.dll}:
+\begin{lstlisting}[language=bash, caption={Goi truc tiep Native Win32 API tu PowerShell}]
+$Signature = @'
+[DllImport("user32.dll", SetLastError = true)]
+public static extern bool LockWorkStation();
+'@
+$Native = Add-Type -MemberDefinition $Signature -Name "Win32Native" -Namespace "Win32" -PassThru
+$Native::LockWorkStation() # Khoa man hinh Windows ngay lap tuc
+\end{lstlisting}
+
+\subsection{3. Tự động hóa ứng dụng Desktop bằng AutoHotkey (AHK)}
+Đối với các phần mềm Windows không hỗ trợ CLI hay API, **AutoHotkey** là vũ khí tối thượng cho phép can thiệp vào tầng Windows Message Hook, gửi phím tắt và click chuột tự động:
+\begin{lstlisting}[language=bash, caption={Script AutoHotkey tu dong kich hoat kiem thu}]
+; Nhan to hop phim Ctrl + Alt + V de kich hoat kiem thu tu dong
+^!v::
+Run, wt.exe -d C:\Projects\Vibecoding
+Sleep, 500
+Send, python scripts/self_healing_test_runner.py http://localhost:3000{Enter}
+return
+\end{lstlisting}
+
+\section{Vòng Lặp Tự Phục Hồi Khép Kín (Self-Healing Loop-until-green)}
+
+Bằng cách tích hợp sâu giữa kịch bản kiểm thử (Playwright) và luồng điều phối tác tử, quy trình phát triển đạt trạng thái **Zero-Touch tự sửa lỗi**:
+
+\begin{enumerate}[label={\arabic*.}]
+    \item Kỹ sư ra đề bài: \textit{``Xây dựng tính năng bóc tách từ vựng TOEIC và đảm bảo vượt qua kiểm thử.''}
+    \item AI Agent sinh mã nguồn và khởi động dev server trên \texttt{localhost:3000}.
+    \item AI Agent kích hoạt kịch bản \texttt{self\_healing\_test\_runner.py}:
+    \begin{itemize}
+        \item Kịch bản lắng nghe 4 kênh: lỗi console, ngoại lệ trang (\textit{hydration crash}), lỗi HTTP 4xx/5xx, và request failed.
+        \item Nếu phát hiện lỗi: Chụp ảnh hiện trạng và xuất tệp \texttt{agent\_feedback.json} ghi rõ dòng lỗi, trả về **Exit Code 1**.
+    \end{itemize}
+    \item AI Agent tự động đọc \texttt{agent\_feedback.json}, định vị chính xác vị trí tệp và thực thi chỉnh sửa mã nguồn cục bộ.
+    \item AI Agent tự động kích hoạt lại kịch bản kiểm thử. Khi toàn bộ các kênh đều xanh sạch, kịch bản trả về **Exit Code 0** $\rightarrow$ Quá trình hoàn tất mà không cần con người can thiệp thủ công!
+\end{enumerate}
+
+\subsection{Cây quyết định: Lựa chọn môi trường tự động hóa \& Công nghệ kịch bản}
+
+Hacker Vibecoder không bị trói buộc vào một công cụ duy nhất mà lựa chọn vũ khí chuẩn xác cho từng bài toán tự động hóa:
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Cây quyết định lựa chọn công nghệ tự động hóa \& kịch bản hệ thống}
+\vspace{0.5em}
+\begin{tabularx}{\textwidth}{L{3.2cm} L{3.8cm} L{4.5cm} Y}
+\toprule
+\textbf{Môi trường / Công nghệ} & \textbf{Cơ chế hoạt động} & \textbf{Vũ khí tối thượng} & \textbf{Bài toán áp dụng tối ưu} \\
+\midrule
+\textbf{Linux POSIX Bash} & Text streams, File Descriptors, Pipes, Signals & Named Pipes (FIFO), \texttt{inotifywait}, \texttt{xargs -P}, \texttt{trap} & Daemon ngầm, CI/CD, Container, tự động hóa build/test \\
+\textbf{Windows PowerShell} & .NET Typed Object Pipeline, WMI/CIM, P/Invoke & \texttt{Get-Process}, \texttt{Add-Type} C\#, COM Automation & Quản trị hệ thống Windows, can thiệp Win32 Native API \\
+\textbf{AutoHotkey (AHK)} & Windows Message Hook, gửi phím \& chuột cấp thấp & \texttt{WinActivate}, \texttt{ControlClick}, phím tắt toàn cục & Tự động hóa ứng dụng Desktop cũ không có API hoặc CLI \\
+\textbf{Android ADB / scrcpy} & Android Debug Bridge, Framebuffer, UIAutomator XML & \texttt{adb exec-out screencap}, \texttt{uiautomator dump} & Thao tác ứng dụng di động Android, test bot mobile \\
+\textbf{Python Hybrid Automation} & Thư viện chuẩn đa nền tảng, HTTPX, Subprocess, Pydantic & \texttt{subprocess.run}, \texttt{yt-dlp}, \texttt{ffmpeg-python} & Kịch bản đa nền tảng kết hợp xử lý media và gọi AI \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Kho kịch bản thực hành đồng hành trong thư mục}
+Thư mục chương 7 trang bị sẵn 4 kịch bản thực chiến độc lập:
+\begin{itemize}[leftmargin=1.5em]
+    \item \texttt{hacker\_linux\_daemon.sh}: Daemon Linux hoàn chỉnh với FIFO IPC, File Descriptor 3 và Signal Trapping.
+    \item \texttt{mobile\_adb\_controller.py}: Điều khiển thiết bị Android tự động qua ADB và UIAutomator XML.
+    \item \texttt{media\_transcriber\_pipeline.py}: Thu hoạch âm thanh từ video với yt-dlp và chuẩn hóa 16kHz mono bằng FFmpeg.
+    \item \texttt{office\_headless\_converter.sh}: Chuyển đổi tài liệu văn phòng Office sang PDF và ảnh chất lượng cao không cần giao diện.
+\end{itemize}
+
+\section{Tổng kết chương và bài tập thực hành}
+
+\subsection{Tóm tắt cốt lõi}
+\begin{itemize}[leftmargin=1.5em]
+    \item Đòn bẩy của một Hacker Vibecoder là hiểu sâu bản chất hệ điều hành: Linux tôn thờ triết lý Text Stream và Pipes; Windows làm chủ Object Pipeline và COM/Win32 API.
+    \item CLI và Shell là giao diện tự nhiên và hiệu quả nhất cho các tác tử AI hoạt động.
+    \item Cơ chế Self-Healing Loop-until-green giải phóng hoàn toàn sức lao động thử-sai thủ công của con người.
+\end{itemize}
+
+\subsection{Bài tập thực hành}
+\begin{enumerate}[label={\arabic*.}]
+    \item \textbf{Thực hành Named Pipe}: Chạy kịch bản \texttt{scripts/hacker\_linux\_daemon.sh}, mở terminal thứ hai và gửi thông điệp vào FIFO bằng lệnh \texttt{echo} để quan sát phản ứng của daemon.
+    \item \textbf{Lập trình PowerShell Object}: Viết một câu lệnh PowerShell một dòng quét toàn bộ các tiến trình đang chiếm cổng mạng (port 3000 và 8000) và tự động tắt tiến trình đó.
+    \item \textbf{Vận hành Self-Healing}: Chạy kịch bản \texttt{scripts/self\_healing\_test\_runner.py} trên một ứng dụng web cục bộ của bạn, cố tình tạo ra một lỗi console và kiểm tra cấu trúc dữ liệu của tệp \texttt{agent\_feedback.json}.
+\end{enumerate}
+
+\end{document}

@@ -1,0 +1,15 @@
+{
+  "name": "chuong_05_kien_truc_logic_va_schema_first",
+  "version": "1.0.0",
+  "description": "### 1. Tổng quan chương Chương này xác lập phương pháp luận **Schema-First** để khóa chặt mô hình dữ liệu bằng TypeScript và Pydantic/Zod; chuẩn hóa mô hình máy trạng thái 4 bước (**Explicit 4-State Machine**); thiết lập quy tắc giới hạn mô-đun siêu nhỏ (**Micro-Modules under 200 lines**) và cơ chế ngắt mạch tự động (**Circuit Breaker**) khi tương tác với các dịch vụ AI.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "zod": "^4.6.7"
+  }
+}

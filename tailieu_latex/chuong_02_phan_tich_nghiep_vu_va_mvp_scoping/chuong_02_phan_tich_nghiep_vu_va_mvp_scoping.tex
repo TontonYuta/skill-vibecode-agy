@@ -1,0 +1,198 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{mathptmx}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{ragged2e}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
+\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!5},
+  rulecolor=\color{gray!40},
+  keywordstyle=\bfseries\color{blue!70!black},
+  commentstyle=\itshape\color{green!50!black},
+  stringstyle=\color{red!60!black},
+  showstringspaces=false
+}
+
+\title{\textbf{Chương 2: Phân Tích Nghiệp Vụ \& MVP Scoping}\\[0.3em]
+\large\textit{Khắc Phục Hội Chứng Nhồi Nhét Tính Năng và Chuẩn Hóa Đặc Tả Kỹ Thuật}}
+\author{\textbf{Giáo Trình Kỹ Nghệ Vibecoding Chuyên Sâu 2026}}
+\date{Tháng 10 Năm 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Hội chứng thất bại phổ biến nhất của các dự án phần mềm do AI tạo ra không nằm ở trình độ viết mã, mà bắt nguồn từ sự thất bại trong khâu phân tích nghiệp vụ: người phát triển không biết tính năng nào là thực sự cần thiết, dẫn đến việc nhồi nhét tràn lan các chức năng phụ trợ, làm loãng trải nghiệm và khiến cơ sở mã phình to ngoài tầm kiểm soát. Chương 2 cung cấp phương pháp luận phân tích nghiệp vụ chuẩn mực dành riêng cho Vibecoding: áp dụng khung \textit{Jobs-to-be-Done} (JTBD), sàng lọc tính năng theo thang đo \textit{MoSCoW}, thực thi nghiêm ngặt \textit{Quy tắc Cắt 50\% tính năng}, và cô đọng yêu cầu thành tệp đặc tả kỹ thuật máy đọc được (\texttt{spec.md}) thông qua kỹ thuật phỏng vấn đối kháng Socratic.
+\end{abstract}
+
+\vspace{1em}
+\rule{\textwidth}{0.4pt}
+
+\section{Bản chất bài toán nghiệp vụ: Tại sao người dùng có xu hướng nhồi nhét tính năng?}
+
+Khi chi phí sinh mã nguồn giảm về gần bằng không nhờ trí tuệ nhân tạo, một cạm bẫy tâm lý mới xuất hiện: \textbf{Ảo tưởng về sự phong phú (Feature Bloat Illusion)}. Trong lập trình truyền thống, sự tốn kém về thời gian và công sức buộc kỹ sư phải đắn đo từng tính năng. Ngược lại, khi vibecoding, chỉ cần một câu prompt ngắn: \textit{``Làm thêm cho tôi phần đăng nhập Google, dark mode, bảng xếp hạng, xuất file PDF và thông báo đẩy''}, AI sẽ lập tức sinh ra mã nguồn cho toàn bộ yêu cầu đó trong vài phút.
+
+Tuy nhiên, hệ quả trực tiếp của việc nhồi nhét tính năng là:
+\begin{enumerate}[label={\arabic*.}]
+    \item \textbf{Phân mảnh luồng trải nghiệm (UX Dilution)}: Người dùng cuối bị choáng ngợp bởi hàng loạt nút bấm, menu đa cấp và bảng dữ liệu không có giá trị chuyển đổi cốt lõi.
+    \item \textbf{Bùng nổ trạng thái biên (Edge Case Explosion)}: Mỗi tính năng thêm vào làm tăng số lượng trạng thái logic theo cấp số nhân ($2^N$), dẫn đến xung đột dữ liệu và xuất hiện lỗi tiềm ẩn ở các module không ngờ tới.
+    \item \textbf{Cạn kiệt bộ nhớ chú ý của AI}: Khi cơ sở mã vượt quá 5.000 dòng mã với hàng chục module dở dang, mô hình AI mất khả năng ghi nhớ toàn vẹn cấu trúc dự án, bắt đầu sinh ra mã trùng lặp và phá vỡ logic cũ.
+\end{enumerate}
+
+\section{Khung lý thuyết Jobs-to-be-Done (JTBD) trong bối cảnh Vibecoding}
+
+Nguyên lý nền tảng của JTBD do Giáo sư Clayton Christensen (Đại học Harvard) khởi xướng: \textbf{``Khách hàng không đơn thuần mua một sản phẩm hay tính năng, họ `thuê' sản phẩm đó để hoàn thành một bước tiến trong cuộc sống của họ.''}
+
+Trong Vibecoding, trước khi mở công cụ gõ lệnh, lập trình viên bắt buộc phải cấu trúc hóa bài toán theo công thức chuẩn:
+
+\begin{center}
+\fbox{\parbox{0.9\textwidth}{
+\textbf{Công thức JTBD chuẩn:}\\
+\textit{Khi gặp hoàn cảnh [Bối cảnh \& Nỗi đau cụ thể], tôi muốn [Hành động / Giải pháp trực tiếp], để tôi có thể đạt được [Kết quả chuyển đổi cốt lõi].}
+}}
+\end{center}
+
+\subsection{Ví dụ phân tích: Ứng dụng Luyện thi TOEIC Reading}
+Xét một trường hợp điển hình mà người học hay gặp:
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Cách tiếp cận sai (Tập trung tính năng râu ria)}: Yêu cầu AI làm app luyện thi có bảng xếp hạng bạn bè, shop đổi quà bằng điểm thưởng, chế độ thi thử 200 câu tính giờ, và diễn đàn thảo luận cộng đồng. Kết quả: App phức tạp, logic chấm điểm bị lỗi, giao diện lòe loẹt nhưng học sinh vẫn không đọc hiểu được bài thi.
+    \item \textbf{Cách tiếp cận đúng (Theo JTBD)}: \textit{``Khi gặp một câu hỏi Part 5 chứa nhiều từ mới và cấu trúc ngữ pháp phức tạp, tôi muốn câu hỏi đó được bóc tách từ vựng đơn giản hóa trước để làm chủ ngữ pháp, sau đó mới tích hợp từ vựng học thuật, để tôi có thể tự tin suy luận đáp án mà không bị hoảng loạn.''}
+\end{itemize}
+
+Từ câu định vị JTBD chuẩn mực trên, sản phẩm chỉ cần \textbf{đúng một tính năng sát thủ (Killer Feature)}: \textit{Bộ chuyển đổi câu hỏi phân tầng (Deconstructed Question Engine)}, mọi thứ khác (đăng nhập mạng xã hội, gamification) đều là rác thải nhận thức trong phiên bản đầu tiên.
+
+\section{Thang đo MoSCoW và Quy tắc Cắt 50\% Tính Năng}
+
+Để ngăn chặn việc đưa các yêu cầu thừa vào dự án, toàn bộ ý tưởng ban đầu phải được đi qua bộ lọc \textbf{MoSCoW} và áp dụng nghiêm ngặt \textbf{Quy tắc Cắt 50\% (The Cut-50\% Rule)}.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Ma trận phân loại tính năng MoSCoW dành cho dự án Vibecoding MVP}
+\vspace{0.5em}
+\begin{tabularx}{\textwidth}{L{2.5cm} L{4.5cm} L{4cm} Y}
+\toprule
+\textbf{Cấp độ MoSCoW} & \textbf{Định nghĩa kỹ thuật} & \textbf{Ví dụ cho App Học tập} & \textbf{Hành vi trong Vibecoding} \\
+\midrule
+\textbf{Must Have (Bắt buộc)} & Nếu thiếu tính năng này, sản phẩm hoàn toàn vô dụng, không giải quyết được JTBD & Bóc tách câu hỏi thành 2 tầng: Ngữ pháp cô lập \& Từ vựng cô lập & Khóa cứng trong \texttt{spec.md}, viết kiểm thử bao phủ $100\%$ \\
+\textbf{Should Have (Nên có)} & Quan trọng nhưng có thể giải quyết tạm thời bằng thao tác thủ công & Lưu lịch sử các câu đã làm vào bộ nhớ cục bộ (LocalStorage) & Chỉ xem xét sau khi Must Have đã chạy trơn tru \\
+\textbf{Could Have (Có thể có)} & Hữu ích nhưng không ảnh hưởng trực tiếp đến giá trị sống còn & Chuyển đổi giao diện Sáng/Tối (Dark Mode), xuất PDF đề thi & Kiên quyết loại bỏ khỏi prompt phiên bản đầu \\
+\textbf{Won't Have (Tuyệt đối không)} & Các tính năng gây xao nhãng hoặc phức tạp hóa kiến trúc quá sớm & Hệ thống nạp thẻ thanh toán, diễn đàn chat thời gian thực, bảng tin & Đưa vào danh sách cấm (\textit{Non-Goals}) trong bản đặc tả \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Quy tắc Cắt 50\% tính năng (The Cut-50\% Rule)}
+Quy tắc thực hành: Sau khi liệt kê toàn bộ danh sách tính năng dự kiến làm trong phiên bản thử nghiệm:
+\begin{enumerate}[label={\arabic*.}]
+    \item Gạch bỏ ngay lập tức $50\%$ số tính năng kém quan trọng nhất (nhóm Could Have và Won't Have).
+    \item Khóa phạm vi chỉ xoay quanh: \textbf{1 Chân dung người dùng (Single Persona)} + \textbf{1 Luồng công việc chính (Single Core Loop)} + \textbf{1 Chỉ số đo lường giá trị duy nhất (Single North Star Metric)}.
+    \item Không bao giờ để AI tự ý bổ sung thêm bất kỳ màn hình hoặc nút bấm phụ nào ngoài danh mục Must Have đã duyệt.
+\end{enumerate}
+
+\section{Kỹ thuật Phỏng vấn Đối kháng Socratic (/grill-me)}
+
+Một sai lầm chí mạng khác của người vibecode là dùng câu lệnh một chiều: chỉ ra lệnh cho AI làm, trong khi AI vốn dĩ có xu hướng chiều lòng người dùng (\textit{sycophancy}) và sẽ luôn đồng ý triển khai dù ý tưởng kiến trúc có vô lý hoặc chứa đầy mâu thuẫn nghiệp vụ.
+
+Để khắc phục điều này, ta áp dụng kỹ thuật \textbf{Phỏng vấn Đối kháng Socratic} (hay lệnh điều phối \texttt{/grill-me}):
+
+\begin{center}
+\fbox{\parbox{0.9\textwidth}{
+\textbf{Khuôn mẫu lệnh phỏng vấn Socratic:}\\
+\texttt{Tôi muốn xây dựng tính năng [Tên ý tưởng]. Bạn hãy đóng vai một Giám đốc Sản phẩm khó tính và một Kỹ sư Trưởng hệ thống. TUYỆT ĐỐI CHƯA VIẾT CODE. Hãy đặt cho tôi 5 câu hỏi phản biện sắc bén nhất về: (1) Ranh giới nghiệp vụ thực tế, (2) Những trường hợp biên (edge cases) có thể làm vỡ logic dữ liệu, và (3) Tính năng nào trong ý tưởng này là râu ria thừa thãi cần cắt bỏ ngay.}
+}}
+\end{center}
+
+Quy trình đối thoại này ép người phát triển phải suy nghĩ thấu đáo về mô hình dữ liệu và các ranh giới thất bại trước khi bắt tay vào triển khai.
+
+\section{Chuẩn hóa tài liệu đặc tả máy đọc được (spec.md)}
+
+Sau khi phỏng vấn và lọc phạm vi, toàn bộ kết quả phải được kết tinh thành một tệp tài liệu duy nhất đặt tại gốc dự án mang tên \texttt{spec.md}. Đây là bản hợp đồng bất biến giữa con người và các tác tử AI.
+
+\begin{lstlisting}[language=bash, caption={Cấu trúc chuẩn của một tệp đặc tả kỹ thuật spec.md}]
+# SPECIFICATION: DECONSTRUCTED TOEIC ENGINE (MVP v1.0)
+
+## 1. CORE JTBD & VALUE PROPOSITION
+- Persona: Nguoi hoc gap kho khan trong viec suy luan ngu phap khi bi can tro boi tu vung la.
+- Core Loop: Nhan 1 cau hoi kho -> Tach thanh 2 tang bai tap rieng biet (Ngu phap / Tu vung) -> Gop lai lam bai hoan chinh.
+
+## 2. MUST-HAVE SCOPE (KILLER FEATURE)
+- Input: Doan van ban cau hoi goc gom 4 dap an A, B, C, D.
+- Processor: Deconstruction Pipeline tach cau thanh 2 bien the.
+- Output: Giao dien hien thi step-by-step 3 buoc ro rang.
+
+## 3. NON-GOALS (TUYET DOI KHONG LAM TRONG V1)
+- KHONG lam he thong dang nhap/dang ky (User Authentication).
+- KHONG tich hop co so du lieu Cloud (Dung Local State / Mock JSON).
+- KHONG lam Dark Mode, thong bao day hoac bang xep hang.
+- KHONG ho tro xuat file PDF hoac in an.
+
+## 4. DATA CONTRACT (TYPESCRIPT SCHEMA)
+export interface QuestionStep {
+  stepIndex: 1 | 2 | 3;
+  type: 'ISOLATED_GRAMMAR' | 'ISOLATED_VOCAB' | 'SYNTHESIZED';
+  instruction: string;
+  stem: string;
+  options: string[];
+  correctAnswer: string;
+  reasoning: string[];
+}
+\end{lstlisting}
+
+\section{Cây Quyết Định Định Hình Sản Phẩm \& Ba Hướng Đi Cho Vibecoder}
+
+Sau khi phân tích JTBD và lọc danh sách Non-Goals, người học đứng trước ngã rẽ lựa chọn mô hình kiến trúc phù hợp. Tùy thuộc vào mục tiêu sản phẩm, giáo trình đề xuất 3 hướng đi thực chiến:
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Cây quyết định lựa chọn hướng đi sản phẩm sau bước phân tích nghiệp vụ}
+\vspace{0.5em}
+\begin{tabularx}{\textwidth}{L{3.2cm} L{3.8cm} L{4.5cm} Y}
+\toprule
+\textbf{Hướng đi sản phẩm} & \textbf{Chiến lược phạm vi (Scope)} & \textbf{Kiến trúc kỹ thuật tối ưu} & \textbf{Chỉ số thành công (Metric)} \\
+\midrule
+\textbf{Hướng 1: Micro-SaaS Đơn Tính Năng (Killer SaaS)} & 1 tính năng sát thủ duy nhất, không bắt đăng ký rườm rà, giải quyết tức thì & Next.js / Vite + Server Actions + Stripe / LemonSqueezy & Tỷ lệ chuyển đổi người dùng dùng thử thành công $> 35\%$ \\
+\textbf{Hướng 2: Tiện Ích Cục Bộ (Local-First Tool)} & Hoạt động 100\% offline, không phụ thuộc đám mây, bảo mật dữ liệu tuyệt đối & Python / Tauri + SQLite FTS5 + PocketBase nhúng & Tốc độ khởi động $< 1$s, dung lượng bộ cài $< 15$MB \\
+\textbf{Hướng 3: Tự Động Hóa \& Bot Dòng Lệnh (CLI Automation)} & Không cần UI, tập trung xử lý luồng công việc lặp đi lặp lại & Python CLI (argparse/click) + Linux Bash / Windows PowerShell & Tiết kiệm thời gian thao tác thủ công từ hàng giờ về vài giây \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Kịch bản thực hành hỗ trợ: socratic\_spec\_builder.py}
+Dự án đi kèm công cụ dòng lệnh \texttt{socratic\_spec\_builder.py} cho phép người học tự động hóa việc sinh tệp \texttt{spec.md} chuẩn mực chỉ bằng cách nhập 5 tham số đầu vào của JTBD, tự động thiết lập danh sách Non-Goals bị cấm và tích hợp các ràng buộc an ninh chống AI Slop.
+
+\section{Tổng kết chương và bài tập thực hành}
+
+\subsection{Tóm tắt cốt lõi}
+\begin{itemize}[leftmargin=1.5em]
+    \item Thất bại của sản phẩm AI phần lớn là do thất bại về phạm vi nghiệp vụ, không phải do cú pháp ngôn ngữ lập trình.
+    \item Khung JTBD giúp định vị chính xác nỗi đau cốt lõi thay vì chạy theo các tính năng hào nhoáng bên ngoài.
+    \item Áp dụng triệt để Quy tắc Cắt 50\% và bảng MoSCoW để bảo vệ bộ nhớ ngữ cảnh của AI và sự tập trung của sản phẩm.
+    \item Luôn khóa cứng nghiệp vụ trong tệp \texttt{spec.md} với danh sách \textit{Non-Goals} minh bạch trước khi viết dòng code đầu tiên.
+\end{itemize}
+
+\subsection{Bài tập thực hành}
+\begin{enumerate}[label={\arabic*.}]
+    \item \textbf{Thực hành JTBD}: Chọn một ý tưởng ứng dụng bạn đang ấp ủ. Hãy viết lại mục tiêu của ứng dụng theo đúng công thức JTBD 3 vế chuẩn mực.
+    \item \textbf{Cắt gọt phạm vi}: Liệt kê 10 tính năng bạn từng nghĩ sẽ đưa vào app đó. Thực hiện cắt bỏ đúng 5 tính năng và giải thích lý do tại sao loại bỏ chúng mà sản phẩm vẫn giữ nguyên giá trị cốt lõi.
+    \item \textbf{Khởi tạo spec.md}: Soạn thảo một tệp \texttt{spec.md} hoàn chỉnh theo cấu trúc chuẩn ở Mục 5 cho bài toán bạn đã chọn.
+\end{enumerate}
+
+\end{document}

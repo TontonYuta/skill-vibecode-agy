@@ -1,0 +1,203 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{mathptmx}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{ragged2e}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+% Cấu hình cột bảng chống giãn khoảng cách trắng
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
+\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+
+% Cấu hình listings cho code snippet gọn gàng
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!5},
+  rulecolor=\color{gray!40},
+  keywordstyle=\bfseries\color{blue!70!black},
+  commentstyle=\itshape\color{green!50!black},
+  stringstyle=\color{red!60!black},
+  showstringspaces=false
+}
+
+\title{\textbf{Chương 1: Khởi Nguyên và Bản Chất Vibecoding}\\[0.3em]
+\large\textit{Sự Chuyển Dịch Từ Thợ Gõ Mã Lệnh Sang Tổng Kiến Trúc Sư Hệ Thống}}
+\author{\textbf{Giáo Trình Kỹ Nghệ Vibecoding Chuyên Sâu 2026}}
+\date{Tháng 10 Năm 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Chương này bóc tách nguồn gốc lịch sử, bản chất nhận thức học và cơ chế vận hành nền tảng của phương pháp \textit{Vibecoding} trong kỷ nguyên các tác tử trí tuệ nhân tạo tự chủ (\textit{Autonomous Agentic AI}). Thông qua các nghiên cứu thực nghiệm mới nhất năm 2026, chương học chứng minh rằng việc phó mặc hoàn toàn cho mô hình ngôn ngữ lớn (LLM) mà thiếu nền tảng kiến trúc sẽ dẫn đến hiện tượng tích lũy nợ nhận thức (\textit{Cognitive Debt}) và sụp đổ mã nguồn. Từ đó, tài liệu xác lập sự chuyển dịch cốt lõi: người kỹ sư không còn là một ``thợ gõ mã'' (\textit{typist}) mà trở thành một Tổng Kiến Trúc Sư kiêm Giám Sát Mã Nguồn (\textit{Lead Architect \& Auditor}), làm chủ hoàn toàn kinh tế học token, cơ chế chú ý và quy trình kiểm chứng thực tế.
+\end{abstract}
+
+\vspace{1em}
+\rule{\textwidth}{0.4pt}
+
+\section{Lịch sử hình thành: Từ Autocomplete đến Kỷ nguyên Tự chủ Agentic}
+
+Thuật ngữ \textit{``Vibecoding''} được khởi xướng bởi Andrej Karpathy vào đầu năm 2025, nhằm mô tả một phương thức lập trình mà ở đó con người hoàn toàn không trực tiếp gõ từng dòng mã nguồn, mà chỉ giao tiếp bằng ngôn ngữ tự nhiên, thả lỏng vào ``dòng chảy cảm xúc'' (\textit{vibes}) và để mô hình AI đảm nhận toàn bộ việc hiện thực hóa. 
+
+Tuy nhiên, để hiểu đúng bản chất kỹ thuật, chúng ta cần đặt Vibecoding vào tiến trình lịch sử 4 giai đoạn của công nghệ hỗ trợ lập trình:
+
+\begin{enumerate}[label={\arabic*.}]
+    \item \textbf{Giai đoạn 1: Dự đoán cục bộ (Autocomplete \& Copilot 2021--2023)}: Các mô hình ngôn ngữ hoàn thành câu lệnh dựa trên ngữ cảnh ngắn cục bộ (vài chục dòng mã). Con người vẫn là người viết chính, mô hình đóng vai trò gợi ý phím Tab.
+    \item \textbf{Giai đoạn 2: Hỗ trợ đối thoại (Chat-Assisted Pair Programming 2023--2024)}: Các giao diện trò chuyện (như ChatGPT, Claude chat) cho phép lập trình viên dán lỗi hoặc yêu cầu sinh hàm độc lập. Nhược điểm chí mạng là con người phải sao chép qua lại bằng tay và thiếu ngữ cảnh toàn cục của dự án.
+    \item \textbf{Giai đoạn 3: Tích hợp môi trường phát triển (IDE-Integrated Agents 2024--2025)}: Sự xuất hiện của Cursor, Windsurf và Claude Dev với khả năng lập chỉ mục cơ sở mã nguồn (codebase indexing), đọc tệp cục bộ và chỉnh sửa nhiều tệp (\textit{multi-file editing}) dựa trên ngữ cảnh ngữ nghĩa.
+    \item \textbf{Giai đoạn 4: Tác tử tự chủ vòng lặp kép (Autonomous Agentic Engineering 2025--2026)}: Các hệ thống như Antigravity (Google DeepMind), SWE-agent và Claude Code thực thi các chu kỳ khép kín: Tự phân tích $\rightarrow$ Tự gọi công cụ (Terminal, LSP, Browser/Playwright) $\rightarrow$ Tự chạy kiểm thử $\rightarrow$ Tự phát hiện ngoại lệ $\rightarrow$ Tự sửa lỗi cho đến khi kiểm thử vượt qua hoàn toàn (\textit{loop-until-green}).
+\end{enumerate}
+
+\section{Bóc trần ảo giác: Nợ nhận thức và bẫy tái triển khai}
+
+Đa số người mới tiếp cận Vibecoding đều rơi vào một bẫy tâm lý nguy hiểm: \textbf{Ảo giác làm chủ (Illusion of Competence)}. Khi chỉ cần gõ một câu lệnh đơn giản, mô hình AI lập tức tạo ra giao diện đẹp mắt và vài chức năng mẫu hoạt động được, người dùng lầm tưởng mình đã tạo ra một sản phẩm hoàn thiện.
+
+Tuy nhiên, nghiên cứu thực nghiệm của \textit{Xu và cộng sự (arXiv:2609.09022, 2026)} đã chỉ ra hai hiện tượng tha hóa phần mềm nghiêm trọng nhất trong mã nguồn AI:
+
+\subsection{Hiện tượng Nợ nhận thức tích lũy (Cognitive Debt Accumulation)}
+Nợ nhận thức phát sinh khi tốc độ sinh mã của AI vượt xa tốc độ đọc hiểu và kiểm chứng của con người. Người lập trình chấp nhận các đoạn mã mà chính họ không hiểu rõ cơ chế hoạt động bên dưới:
+\begin{itemize}[leftmargin=1.5em]
+    \item Khi phát sinh lỗi, người dùng không thể khoanh vùng nguyên nhân gốc rễ (\textit{root cause}) mà tiếp tục dùng prompt mô tả triệu chứng bề mặt.
+    \item AI phản hồi bằng cách vá đè thêm các tầng điều kiện \texttt{if-else} chắp vá, tạo ra một cơ sở mã ``mì ăn liền'' (\textit{spaghetti code}) ẩn chứa rủi ro đổ vỡ dây chuyền.
+    \item Sau 5--7 lượt lặp không kiểm soát, dự án rơi vào trạng thái tê liệt: bất kỳ thay đổi nhỏ nào cũng gây ra lỗi ở các module không liên quan.
+\end{itemize}
+
+\subsection{Bẫy tái triển khai (Reimplementation Trap)}
+Nghiên cứu của \textit{arXiv:2609.29410 (2026)} phát hiện rằng các mô hình LLM có xu hướng tự viết lại các hàm tiện ích hoặc logic cốt lõi đã tồn tại trong dự án, thay vì nhập khẩu (\textit{import}) các module có sẵn. Hậu quả là:
+\begin{itemize}[leftmargin=1.5em]
+    \item Trong cùng một ứng dụng xuất hiện 3--4 phiên bản xử lý ngày tháng hoặc giải mã JWT khác nhau.
+    \item Sự không nhất quán về trạng thái (state inconsistency) xảy ra khi một bên dùng cơ chế bất đồng bộ thuần, bên kia lại bọc trong Promise lồng nhau.
+\end{itemize}
+
+\section{Kinh tế học Token và Giới hạn cửa sổ ngữ cảnh}
+
+Để vibecode hiệu quả, kỹ sư bắt buộc phải hiểu quy luật vật lý của các mô hình Transformer: \textbf{Kinh tế học Token và hiện tượng suy giảm chú ý}.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Mối quan hệ giữa độ dài cửa sổ ngữ cảnh, chi phí và độ chính xác suy luận}
+\vspace{0.5em}
+\begin{tabularx}{\textwidth}{L{2.5cm} L{3.5cm} L{4.5cm} Y}
+\toprule
+\textbf{Kích thước Context} & \textbf{Chi phí Token \& Độ trễ} & \textbf{Mức độ chú ý (Attention Precision)} & \textbf{Khuyến nghị hành vi} \\
+\midrule
+$< 8.000$ tokens & Rất thấp, phản hồi dưới 3 giây & Tập trung tối đa ($> 98\%$), tuân thủ đặc tả kỹ thuật nghiêm ngặt & Phạm vi tối ưu cho việc viết module đơn vị \\
+$8.000 - 32.000$ tokens & Trung bình, độ trễ bắt đầu tăng & Suy giảm nhẹ ($85 - 90\%$), có xu hướng bỏ qua các ràng buộc ở giữa context & Cần nhắc lại các interface cốt lõi trong prompt \\
+$32.000 - 128.000$ tokens & Cao, độ trễ từ 15--45 giây & Suy thoái chú ý mạnh (\textit{Lost in the Middle}), ảo giác cấu trúc tăng 40\% & Bắt buộc phải cô đọng tài liệu, cắt tỉa file \\
+$> 128.000$ tokens & Rất đắt, dễ tràn ngưỡng bộ nhớ & Tỷ lệ quên ngữ cảnh nghiệp vụ cao, sinh code thừa thãi & Nguy cơ hỏng dự án; cần dùng Subagent độc lập \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Hiện tượng Ô nhiễm ngữ cảnh (Context Pollution)}
+Sai lầm phổ biến nhất của người mới là khi gặp lỗi trong terminal, họ sao chép toàn bộ 500 dòng log hoặc stack trace dán vào khung chat. 
+\begin{itemize}[leftmargin=1.5em]
+    \item Hành động này đẩy hàng chục nghìn token rác (đường dẫn hệ thống, thư viện bên thứ ba, cảnh báo npm vô nghĩa) vào bộ nhớ làm việc của mô hình.
+    \item Cơ chế \textit{Self-Attention} của Transformer sẽ bị phân tán năng lượng vào các chuỗi ký tự rác đó, làm lu mờ phần hướng dẫn kiến trúc ban đầu.
+    \item \textbf{Nguyên tắc bắt buộc}: Luôn cắt lọc log lỗi bằng \texttt{head -n 30} hoặc chỉ trích xuất đúng dòng lỗi logic và mã định danh ngoại lệ.
+\end{itemize}
+
+\section{Sự dịch chuyển mô hình: Từ Thợ gõ mã sang Tổng kiến trúc sư}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{So sánh bản chất giữa Blind Vibecoding và Mindful Vibecoding chuyên nghiệp}
+\vspace{0.5em}
+\begin{tabularx}{\textwidth}{L{3.2cm} L{5.5cm} Y}
+\toprule
+\textbf{Tiêu chí so sánh} & \textbf{Blind Vibecoding (Ngẫu hứng - Rủi ro)} & \textbf{Mindful Vibecoding (Có ý thức - Bền vững)} \\
+\midrule
+\textbf{Vị thế con người} & Thụ động chấp nhận mọi dòng mã do AI sinh ra & Giữ quyền quyết định kiến trúc, thẩm định và duyệt mã nghiêm ngặt \\
+\textbf{Điểm bắt đầu} & Gõ prompt ý tưởng chung chung vào chat & Khóa cứng nghiệp vụ qua JTBD, MoSCoW và tệp \texttt{spec.md} \\
+\textbf{Kiểm soát Tech Stack} & Để AI tự chọn thư viện ngẫu nhiên, không rõ tính năng & Chỉ định chính xác thư viện trong \texttt{TECH\_STACK.md}, nắm rõ giới hạn \\
+\textbf{Xác thực kết quả} & Mở trình duyệt bấm thử bằng tay (\textit{Click \& Hope}) & Bắt buộc chạy kiểm thử tự động, linter và Playwright headful/headless \\
+\textbf{Xử lý sự cố} & Prompt vá lỗi liên tục nhiều lần dẫn tới nát code & Áp dụng quy tắc 2-Strike Git Reset: hoàn tác ngay khi sửa sai 2 lần \\
+\textbf{Thẩm mỹ giao diện} & Giao diện dính AI Slop (màu tím neon, card trôi nổi) & Áp dụng chuẩn thiết kế phẳng thủ công, lưới 8px, bảng màu 60--30--10 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Nguyên tắc Không tin tưởng mã nguồn chưa qua kiểm chứng (Zero-Trust Code Generation)}
+Trong phương pháp Vibecoding chuyên nghiệp, mã nguồn do LLM tạo ra phải được đối xử tương tự như mã nguồn của một lập trình viên thực tập gửi lên:
+\begin{enumerate}[label={\arabic*.}]
+    \item Không được tự ý đưa vào nhánh chính (\textit{main}) nếu chưa vượt qua trình biên dịch kiểu dữ liệu tĩnh (như \texttt{tsc --noEmit} trong TypeScript hoặc \texttt{mypy} trong Python).
+    \item Bắt buộc phải có ít nhất một bài kiểm thử đơn vị (\textit{unit test}) hoặc bài kiểm thử tích hợp (\textit{integration test}) chứng minh đoạn mã giải quyết đúng trường hợp biên (\textit{edge case}).
+    \item Đảm bảo kiểm tra các lỗ hổng bảo mật cơ bản trước khi triển khai: không để lọt khóa bí mật, không bỏ sót cơ chế phân quyền tài nguyên.
+\end{enumerate}
+
+\section{Quy Trình Tạo Mẫu Siêu Tốc: AI Studio Apps, OpenCode và 9Router}
+
+Trong thực tế phát triển sản phẩm năm 2026, quy trình vibecoding hiệu quả nhất thường đi theo mô hình 3 pha kết hợp giữa đám mây và tác tử cục bộ:
+
+\subsection{1. Google AI Studio Apps: Động cơ tạo mẫu MVP tức thì}
+Nền tảng Google AI Studio Apps (\texttt{https://aistudio.google.com/apps}) sử dụng các mô hình Gemini 2.0/2.5 cho phép lập trình viên biến một câu prompt đặc tả thành một ứng dụng web hoạt động được với giao diện trực quan trong vòng chưa đầy 30 giây. 
+
+Tuy nhiên, mã nguồn tải về từ AI Studio luôn tồn tại 2 cạm bẫy kỹ thuật nghiêm trọng:
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Rò rỉ API Key ở máy khách}: Thư viện SDK AI thường được gọi trực tiếp trong React component của trình duyệt, làm lộ khóa bí mật trong tab Network của DevTools.
+    \item \textbf{Cấu trúc đơn khối khổng lồ}: Toàn bộ logic, state và style bị nén chung vào một tệp \texttt{App.tsx} dài 500--800 dòng.
+\end{itemize}
+
+\subsection{2. OpenCode: Tác tử dòng lệnh mở toàn diện}
+Sau khi tải mã nguồn ZIP từ AI Studio về, lập trình viên sử dụng **OpenCode** (\texttt{anomalyco/opencode}) --- một tác tử dòng lệnh TUI mã nguồn mở viết bằng Go --- để thực hiện việc tái cấu trúc (refactoring). Khác với Claude Code bị trói buộc vào một nhà cung cấp độc quyền, OpenCode hoạt động đa nền tảng (\textit{provider-agnostic}), hỗ trợ hai chế độ tách biệt: chế độ \texttt{plan} (chỉ đọc để khảo sát cơ sở mã) và chế độ \texttt{build} (thực thi chỉnh sửa tệp và chạy lệnh terminal).
+
+\subsection{3. 9Router: Gateway định tuyến thông minh và Nén Token (RTK)}
+Để duy trì phiên làm việc không bị gián đoạn khi gặp lỗi giới hạn hạn mức (\textit{HTTP 429 Quota Exceeded}), toàn bộ các công cụ (OpenCode, Cursor, Antigravity) được trỏ qua trạm trung chuyển **9Router** (\texttt{http://localhost:20128/v1}). 
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Tự động rẽ nhánh 3 tầng (3-Tier Auto-Fallback)}: Tự động chuyển hướng từ mô hình chính sang mô hình dự phòng (Gemini $\rightarrow$ DeepSeek $\rightarrow$ Local Ollama) trong vòng 100ms khi xảy ra sự cố.
+    \item \textbf{Bộ nén Rust Token Killer (RTK)}: Tự động dọn dẹp các ký tự khoảng trắng thừa và chú thích rác trong các lệnh \texttt{git diff}, giúp tiết kiệm từ 20\% đến 65\% chi phí token.
+\end{itemize}
+
+\subsection{4. Cây quyết định: Lựa chọn hướng đi và mô hình Vibecoding}
+
+Người học không nên áp dụng một quy trình duy nhất cho mọi bài toán. Dưới đây là cây quyết định phân loại 3 lộ trình hành động dựa trên nguồn lực và mục tiêu dự án:
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Ma trận quyết định lựa chọn phong cách Vibecoding thực chiến}
+\vspace{0.5em}
+\begin{tabularx}{\textwidth}{L{3.2cm} L{3.8cm} L{4.5cm} Y}
+\toprule
+\textbf{Lộ trình thực chiến} & \textbf{Công cụ phối hợp nòng cốt} & \textbf{Đặc điểm kiến trúc} & \textbf{Đối tượng \& Thời gian tối ưu} \\
+\midrule
+\textbf{Lộ trình A: Thần tốc MVP (24h Ship)} & AI Studio Apps + OpenCode TUI + 9Router & React Vite / Next.js, Server Actions, SQLite nhúng, Tailwind CSS & Indie Hacker, kiểm chứng ý tưởng thị trường trong 1--2 ngày \\
+\textbf{Lộ trình B: Kỹ sư Tự trị (Autonomous Swarm)} & Antigravity CLI / OpenCode Headless + Multi-Agent (Spec, Coder, Auditor, QA) & Schema-First, Zod contracts, TDD loop-until-green, Micro-modules & Ứng dụng SaaS phức tạp, Full-stack web, SDK, CLI tools \\
+\textbf{Lộ trình C: Hacker Cục bộ (Local-First \& Offline)} & Local Ollama (DeepSeek R1/V3) + PocketBase / DuckDB + Bash/Python & 100\% Offline, không truyền dữ liệu ra ngoài, chi phí API bằng 0 & Xử lý dữ liệu nhạy cảm nội bộ, doanh nghiệp đề cao bảo mật \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{5. Kịch bản thực hành đồng hành: token\_budget\_calculator.py}
+Dự án đi kèm công cụ \texttt{token\_budget\_calculator.py} nằm trực tiếp trong thư mục chương. Công cụ này phân tích cơ sở mã, định lượng số token ước tính, đối chiếu với ngưỡng suy giảm chú ý (\textit{Lost in the Middle}) và khuyến nghị chiến lược phân bổ tác tử (Single-Agent vs Swarm Delegation) kèm bảng tính chi phí API năm 2026.
+
+\section{Tổng kết chương và bài tập thực hành}
+
+\subsection{Tóm tắt cốt lõi}
+\begin{itemize}[leftmargin=1.5em]
+    \item Vibecoding không phải là lập trình lười biếng hay buông thả, mà là nghệ thuật điều phối các tác tử AI hoạt động trong một khuôn khổ kỹ thuật và kiến trúc có kỷ luật cao.
+    \item Nợ nhận thức là kẻ thù số một; việc không hiểu mã nguồn sẽ sớm phá hủy toàn bộ dự án khi quy mô vượt qua vài nghìn dòng mã.
+    \item Cửa sổ ngữ cảnh của LLM là tài nguyên hữu hạn và suy giảm độ sắc bén khi tăng kích thước; phải tối ưu token bằng cách chia nhỏ module và cắt lọc log.
+\end{itemize}
+
+\subsection{Bài tập thực hành phản tư}
+\begin{enumerate}[label={\arabic*.}]
+    \item \textbf{Phân tích cơ sở mã cũ}: Hãy rà soát lại một dự án bạn từng làm với AI. Liệt kê tối thiểu 3 đoạn mã mà bạn chấp nhận nhưng không hiểu rõ cơ chế hoạt động bên dưới.
+    \item \textbf{Thực hành cắt lọc ngữ cảnh}: Giả sử terminal trả về 200 dòng cảnh báo cảnh báo npm và 1 lỗi biên dịch TypeScript. Hãy viết câu lệnh trích xuất chỉ 5 dòng chứa thông tin quan trọng nhất để cung cấp cho mô hình.
+    \item \textbf{Thiết lập quy tắc làm việc}: Soạn thảo một tệp \texttt{AGENTS.md} cá nhân hóa đặt ra 3 điều kiện tiên quyết mà AI phải tuân thủ trước khi bạn chấp nhận bất kỳ thay đổi tệp nào.
+\end{enumerate}
+
+\end{document}
