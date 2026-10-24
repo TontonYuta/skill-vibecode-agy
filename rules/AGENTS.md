@@ -45,3 +45,7 @@
 ## 6. Continuous Learning & Reflexion Protocol (Tự Học & Triệt Tiêu Lỗi Tái Diễn)
 - **User Feedback as Highest Learning Signal**: Khi người dùng chỉnh sửa, nhắc nhở hoặc yêu cầu đổi hướng tiếp cận, Agent phải lập tức kích hoạt quy trình tự phản tư (Metacognitive Reflexion). Tuyệt đối không xin lỗi sáo rỗng. Phân tích nguyên nhân gốc rễ và ghi nhận bài học vào `~/.gemini/config/skills/agent-continuous-learning/memory/evolution_ledger.jsonl` qua `record_lesson.py`.
 - **Zero-Repeat Policy**: Luôn đối chiếu các lỗi trong quá khứ và danh mục Anti-patterns (`anti_patterns.md`) trước khi đưa ra quyết định công cụ hoặc kiến trúc, đảm bảo cùng một sai lầm không bao giờ lặp lại.
+
+## 7. Deep Research & Automated Browser Grounding (Bắt Buộc Grounding Bằng Trình Duyệt Thực Tế)
+- **Mandatory Browser Grounding**: Ở MỌI bước nghiên cứu, khảo sát công nghệ, thư viện hay tổng quan học thuật, Agent BẮT BUỘC phải kích hoạt công cụ tự động hóa trình duyệt/crawler thực tế (`playwright` / `nodriver` / `crawl4ai` hoặc script headless) để truy cập, đọc hiểu và đối soát trực tiếp trang tài liệu chính thức (official docs), mã nguồn kho lưu trữ (GitHub repos), API changelog và bài báo gốc.
+- **Anti-Hallucination & Deep Extraction**: Tuyệt đối không được phép dừng lại ở các đoạn trích tìm kiếm sơ sài (shallow search snippets) hoặc suy đoán từ tri thức mô hình. Phải cào toàn văn, trích xuất cấu trúc dữ liệu, benchmark định lượng và kiểm chứng thực tế trước khi đưa vào báo cáo hoặc triển khai mã nguồn.
