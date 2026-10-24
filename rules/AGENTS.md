@@ -41,3 +41,7 @@
 - **Mandatory `TECH_STACK.md`**: Mọi dự án mới phải có tệp `TECH_STACK.md` giải thích danh sách thư viện sử dụng, lý do lựa chọn và bản đồ luồng dữ liệu (Data Flow).
 - **Schema-First & Explicit State Machine**: Khóa cứng mô hình dữ liệu bằng TypeScript interfaces / Pydantic models. Mọi component tương tác phải định nghĩa đủ 4 trạng thái: `Idle` -> `Loading` -> `Success` -> `Error/Empty`.
 - **2-Strike Git Reset Protocol**: Nếu sửa một lỗi quá 2 lần trong một phiên chat mà không thành công, lập tức khôi phục trạng thái bằng `git reset --hard HEAD` và giải thích nguyên nhân gốc rễ (Root Cause Post-Mortem) cho người dùng trước khi thử chiến lược mới.
+
+## 6. Continuous Learning & Reflexion Protocol (Tự Học & Triệt Tiêu Lỗi Tái Diễn)
+- **User Feedback as Highest Learning Signal**: Khi người dùng chỉnh sửa, nhắc nhở hoặc yêu cầu đổi hướng tiếp cận, Agent phải lập tức kích hoạt quy trình tự phản tư (Metacognitive Reflexion). Tuyệt đối không xin lỗi sáo rỗng. Phân tích nguyên nhân gốc rễ và ghi nhận bài học vào `~/.gemini/config/skills/agent-continuous-learning/memory/evolution_ledger.jsonl` qua `record_lesson.py`.
+- **Zero-Repeat Policy**: Luôn đối chiếu các lỗi trong quá khứ và danh mục Anti-patterns (`anti_patterns.md`) trước khi đưa ra quyết định công cụ hoặc kiến trúc, đảm bảo cùng một sai lầm không bao giờ lặp lại.
